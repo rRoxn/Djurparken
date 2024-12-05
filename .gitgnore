@@ -1,0 +1,6 @@
+#Ignorera .idea filen som Pycharm skapar 
+.idea/
+
+
+#Ignorera mitt virtuella miljö 
+.env/
