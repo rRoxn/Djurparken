@@ -4,7 +4,7 @@ from animals.lion import Lion
 def main():
     # Skapa djurparken
     my_zoo = Zoo(
-        name="Djurparken",
+        name="Eggis Zoo",
         opening_hours="09:00 - 18:00",
         ticket_price=150.0,
         addons={"Mata djur": 50.0, "Detaljerad info": 30.0},
