@@ -4,4 +4,4 @@
 
 
 #Ignorera mitt virtuella miljö
-.env/
+env/
