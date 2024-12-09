@@ -8,3 +8,7 @@ class Lion(Animal):
     def get_info(self):
         """Returnerar information om lejonet."""
         return f"Lejon: {self.name}, Ålder: {self.age}, Favoritmat: {self.favorite_food}"
+
+    def interact(self):
+        self.hungry = True
+        return f"{self.name} tittar stolt på dig."
