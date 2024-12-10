@@ -1,0 +1,1 @@
+Fel vid test efter skapandet av ny klass. PÅ grund av fel skrivning i syntax så gick ej att köra tester.

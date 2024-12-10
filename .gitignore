@@ -5,3 +5,5 @@
 
 #Ignorera mitt virtuella miljö
 env/
+
+__pycache__/

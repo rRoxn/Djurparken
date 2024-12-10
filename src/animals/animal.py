@@ -19,3 +19,5 @@ class Animal(ABC):
             self.hungry = False
             return f"{self.name} åt upp {food}!"
         return f"{self.name} vill inte äta {food}."
+
+    

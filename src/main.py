@@ -1,5 +1,6 @@
 from zoo.zoo import Zoo
 from animals.lion import Lion
+from animals.lioncub import lioncub
 
 def main():
     # Skapa djurparken
@@ -12,7 +13,9 @@ def main():
 
     # Lägg till djur
     simba = Lion("Simba", 5)
+    nala = Lioncub("Nala", 14)
     my_zoo.add_animal(simba)
+    my_zoo.add_animal(nala)
 
     # Meny för interaktion med djurparken
     print("Välkommen till Djurparken!")
