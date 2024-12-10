@@ -2,7 +2,7 @@ from animals.lion import Lion
 
 class LionCub(Lion):
     def __init__(self, name: str, months: int):
-        """Initerar en lejonunge"""
+        """Initierar en lejonunge"""
         super().__init__(name, age=0) #Sätter ålder som 0 för att ärva av lion korrekt
         self.months = months
 

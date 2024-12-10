@@ -1,3 +1,4 @@
+from src.animals.giraffe import Giraffe
 from zoo.zoo import Zoo
 from animals.lion import Lion
 from animals.lioncub import lioncub
@@ -14,8 +15,10 @@ def main():
     # Lägg till djur
     simba = Lion("Simba", 5)
     nala = Lioncub("Nala", 14)
+    melman = Giraffe("Melman", 7)
     my_zoo.add_animal(simba)
     my_zoo.add_animal(nala)
+    my_zoo.add_animal(melman)
 
     # Meny för interaktion med djurparken
     print("Välkommen till Djurparken!")
