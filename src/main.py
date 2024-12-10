@@ -16,9 +16,11 @@ def main():
     simba = Lion("Simba", 5)
     nala = Lioncub("Nala", 14)
     melman = Giraffe("Melman", 7)
+    dumbo = Elephant("Dumbo", 24)
     my_zoo.add_animal(simba)
     my_zoo.add_animal(nala)
     my_zoo.add_animal(melman)
+    my_zoo.add_animal(dumbo)
 
     # Meny för interaktion med djurparken
     print("Välkommen till Djurparken!")
