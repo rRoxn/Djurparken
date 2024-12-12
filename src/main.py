@@ -1,7 +1,10 @@
-from src.animals.giraffe import Giraffe
+
 from zoo.zoo import Zoo
 from animals.lion import Lion
-from animals.lioncub import lioncub
+from animals.lioncub import LionCub
+from animals.giraffe import Giraffe
+from animals.elephant import Elephant
+
 
 def main():
     # Skapa djurparken
@@ -13,12 +16,14 @@ def main():
     )
 
     # Lägg till djur
-    simba = Lion("Simba", 5)
-    nala = Lioncub("Nala", 14)
-    melman = Giraffe("Melman", 7)
+    simba = Lion("Simba", 5, "assets/images/lion.png")
+    nala = LionCub("Nala", 14, "assets/images/lioncub.jpeg")
+    melman = Giraffe("Melman", 7, "assets/images/giraffe.png")
+    dumbo = Elephant("Dumbo", 24, "assets/images/elephant.png")
     my_zoo.add_animal(simba)
     my_zoo.add_animal(nala)
     my_zoo.add_animal(melman)
+    my_zoo.add_animal(dumbo)
 
     # Meny för interaktion med djurparken
     print("Välkommen till Djurparken!")
@@ -26,7 +31,7 @@ def main():
     print("2. Sök efter ett djur")
     print("3. Mata ett djur")
     print("4. Avsluta")
-
+    #Loop för val i menyn
     while True:
         choice = input("\nVad vill du göra? (1-4): ")
         if choice == "1":

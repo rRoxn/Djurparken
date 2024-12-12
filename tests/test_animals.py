@@ -14,6 +14,7 @@ def test_elephant_interaction():
     assert dumbo.interact() == "Dumbo låter dig klappa dess snabel."
     assert dumbo.hungry is True
 
+
 def test_elephant_feeding():
     dumbo = Elephant("Dumbo", 10)
     assert dumbo.feed("jordnötter") == "Dumbo åt upp jordnötter!"
@@ -22,7 +23,7 @@ def test_elephant_feeding():
 
 
 
-
+#Tester för lejonunge
 def test_lioncub_get_info():
     """Testar get_info-metoden för LionCub."""
     nala = LionCub("Nala", 14)  # Skapa en ny instans för testet
@@ -36,13 +37,15 @@ def test_lioncub_interaction():
     assert simba_jr.interact() == "Simba Jr. tittar stolt på dig."
     assert simba_jr.hungry is True  # Kontrollera att interaktion gör djuret hungrigt
 
+
+
 def test_lioncub_feeding():
     """Testar matning av LionCub."""
     nala = LionCub("Nala", 14)
     assert nala.feed("kött") == "Nala åt upp kött!"  # Rätt mat
     assert nala.hungry is False  # Kontrollera att hungerstatus ändras
     assert nala.feed("blad") == "Nala vill inte äta blad."  # Fel mat
-
+#Tester för giraff
 def test_giraffe_get_info():
     """Testar get_info-metoden för Giraff."""
     melman = Giraffe("Melman", 7)
@@ -56,9 +59,30 @@ def test_giraffe_interaction():
     assert melman.interact() == "Melman sträcker sig efter blad."
     assert melman.hungry is True  # Kontrollera att giraffen blir hungrig
 
+
+
+
 def test_giraffe_feeding():
     """Testar matning av Giraff."""
     melman = Giraffe("Melman", 7)
     assert melman.feed("blad") == "Melman åt upp blad!"
     assert melman.hungry is False  # Kontrollera att hungerstatus ändras
     assert melman.feed("kött") == "Melman vill inte äta kött."  # Fel mat
+#Test för image_path
+def test_elephant_interaction():
+    dumbo = Elephant("Dumbo", 10, "images/elephant.png")
+    assert dumbo.interact() == "Dumbo låter dig klappa dess snabel."
+    assert dumbo.hungry is True
+
+def test_elephant_image_path():
+    dumbo = Elephant("Dumbo", 10, "images/elephant.png")
+    assert dumbo.image_path == "images/elephant.png"
+
+def test_lioncub_image_path():
+    nala = LionCub("Nala", 14, "images/lioncub.png")
+    assert nala.image_path == "images/lioncub.png"
+
+def test_giraffe_interaction():
+    melman = Giraffe("Melman", 7, "images/giraffe.png")
+    assert melman.interact() == "Melman sträcker sig efter blad."
+    assert melman.hungry is True

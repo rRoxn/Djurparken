@@ -1,9 +1,9 @@
 from animals.animal import Animal
 
 class Giraffe(Animal):
-    def __init__(self, name: str, age: int):
+    def __init__(self, name: str, age: int, image_path):
         """Initierar en giraff."""
-        super().__init__(name, age, "blad")
+        super().__init__(name, age, "blad", image_path)
 
     def interact(self):
         """Interaktion för giraff."""
