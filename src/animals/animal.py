@@ -10,15 +10,11 @@ class Animal(ABC):
         self.image_path = image_path
 
     @abstractmethod
-    def get_info(self):
-        """Returnerar information om djuret."""
+    def interact(self):
+        """Interagerar med djuret. Måste implementeras av subklasser."""
         pass
 
-    def feed(self, food: str):
-        """Matar djuret och uppdaterar hungerstatus."""
-        if food == self.favorite_food:
-            self.hungry = False
-            return f"{self.name} åt upp {food}!"
-        return f"{self.name} vill inte äta {food}."
-
-    
+    @abstractmethod
+    def eat(self, food: str):
+        """Matar djuret. Måste implementeras av subklasser."""
+        pass

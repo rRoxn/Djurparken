@@ -16,10 +16,17 @@ def main():
     )
 
     # Lägg till djur
+<<<<<<< HEAD
     simba = Lion("Simba", 5, "assets/images/lion.png")
     nala = LionCub("Nala", 14, "assets/images/lioncub.jpeg")
     melman = Giraffe("Melman", 7, "assets/images/giraffe.png")
     dumbo = Elephant("Dumbo", 24, "assets/images/elephant.png")
+=======
+    simba = Lion("Simba", 5)
+    nala = Lioncub("Nala", 14)
+    melman = Giraffe("Melman", 7)
+    dumbo = Elephant("Dumbo", 24)
+>>>>>>> 55ca0da80b47276ec6f744191dcf7b21d8368862
     my_zoo.add_animal(simba)
     my_zoo.add_animal(nala)
     my_zoo.add_animal(melman)
