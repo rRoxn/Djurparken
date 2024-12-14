@@ -1,11 +1,9 @@
 from animals.lion import Lion
 
 class LionCub(Lion):
-<<<<<<< HEAD
+
     def __init__(self, name: str, months: int, image_path = str):
-=======
-    def __init__(self, name: str, months: int, image_path: str):
->>>>>>> 55ca0da80b47276ec6f744191dcf7b21d8368862
+
         """Initierar en lejonunge"""
         super().__init__(name, age = 0, image_path=image_path) #Sätter ålder som 0 för att ärva av lion korrekt
         self.months = months

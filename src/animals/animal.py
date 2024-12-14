@@ -16,5 +16,5 @@ class Animal(ABC):
 
     @abstractmethod
     def eat(self, food: str):
-        """Matar djuret. Måste implementeras av subklasser."""
+        """Funktion för att mata djuren. Måste implementeras av subklasser."""
         pass

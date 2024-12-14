@@ -1,11 +1,7 @@
 from animals.animal import Animal
 
 class Elephant(Animal):
-<<<<<<< HEAD
     def __init__(self, name: str, age: int, image_path):
-=======
-    def __init__(self, name: str, age: int, image_path: str):
->>>>>>> 55ca0da80b47276ec6f744191dcf7b21d8368862
         super().__init__(name, age, "jordnötter", image_path)
 
     def get_info(self):

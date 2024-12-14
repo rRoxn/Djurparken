@@ -1,11 +1,6 @@
 from animals.animal import Animal
 
 class Giraffe(Animal):
-<<<<<<< HEAD
-    def __init__(self, name: str, age: int, image_path):
-        """Initierar en giraff."""
-        super().__init__(name, age, "blad", image_path)
-=======
     def __init__(self, name: str, age: int, image_path: str):
         """Initierar en giraff."""
         super().__init__(name, age, "blad", image_path)
@@ -16,7 +11,6 @@ class Giraffe(Animal):
             f"Giraff: {self.name}, Ålder: {self.age}, "
             f"Favoritmat: {self.favorite_food}, Bildväg: {self.image_path}"
             )
->>>>>>> 55ca0da80b47276ec6f744191dcf7b21d8368862
 
     def interact(self):
         """Interaktion för giraff."""

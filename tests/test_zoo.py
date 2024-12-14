@@ -7,7 +7,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 
 from zoo.zoo import Zoo  # Importera Zoo-klassen
 from animals.lion import Lion
-<<<<<<< HEAD
 from animals.elephant import Elephant
 from animals.lioncub import LionCub
 from animals.giraffe import Giraffe
@@ -28,27 +27,15 @@ def create_giraffe():
 @pytest.fixture
 def create_lioncub():
     return LionCub("Nala", 14, "assets/images/lioncub.png")
-=======
->>>>>>> 55ca0da80b47276ec6f744191dcf7b21d8368862
 
 @pytest.fixture
 def example_zoo():
     """Skapar ett exempel-zoo för tester."""
-<<<<<<< HEAD
     zoo = Zoo(name="Test Zoo", opening_hours="10:00 - 16:00", ticket_price=100.0, addons={})
     zoo.add_animal(Lion("Simba", 5, "assets/images/lion.png"))
     zoo.add_animal(LionCub("Nala", 14, "assets/images/lioncub.png"))
     zoo.add_animal(Giraffe("Melman", 7, "assets/images/giraffe.png"))
     zoo.add_animal(Elephant("Dumbo", 10, "assets/images/elephant.png"))
-=======
-    zoo = Zoo(
-        name="Test Zoo",
-        opening_hours="10:00 - 16:00",
-        ticket_price=100.0,
-        addons={"Utfodring": 50.0, "Interaktiv tur": 75.0}
-    )
-    zoo.add_animal(Lion("Simba", 5, "images/lion.png"))  # Skicka med image_path
->>>>>>> 55ca0da80b47276ec6f744191dcf7b21d8368862
     return zoo
 
 
