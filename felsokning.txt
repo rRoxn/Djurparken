@@ -2,4 +2,4 @@ Fel vid test efter skapandet av ny klass. PÅ grund av fel skrivning i syntax s�
 Fel med syntax för funktion för get_info. La till denna i bas klassen för alla. Men la sedan till denna def för alla subklasser för hantering är lättare. 
 så gör en abstract def i basklass istället. 
 
-
+Fel med olika asserts i tester. 
