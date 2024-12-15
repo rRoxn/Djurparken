@@ -3,3 +3,4 @@ Fel med syntax för funktion för get_info. La till denna i bas klassen för all
 så gör en abstract def i basklass istället. 
 
 Fel med olika asserts i tester. 
+

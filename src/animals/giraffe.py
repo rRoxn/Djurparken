@@ -29,3 +29,4 @@ class Giraffe(Animal):
             f"Art: {self.get_species()}, Namn: {self.name}, "
             f"Ålder: {self.age}, Favoritmat: {self.favorite_food}, Bildväg: {self.image_path}, "
             f"Hungrig: {'Ja' if self.hungry else 'Nej'}"
+            )
