@@ -1,4 +1,4 @@
-from src.gui import MainApp
+from gui import MainApp
 from zoo.zoo import Zoo
 from animals.lion import Lion
 from animals.lioncub import LionCub
