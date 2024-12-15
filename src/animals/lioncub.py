@@ -6,13 +6,12 @@ class LionCub(Lion):
         super().__init__(name, age=0, image_path=image_path)  # Ålder sätts till 0 eftersom månader används
         self.months = months
 
-
     def eat(self, food: str) -> str:
         """Lejonungens specifika sätt att äta."""
-        if not self.hungry:
+        if not self.is_hungry():  # Använd basklassens metod
             return f"{self.name} är inte hungrig."
-        if self.validate_food(food):
-            self.hungry = False
+        if self.validate_food(food):  # Kontrollera favoritmat
+            self.toggle_hunger()  # Byt hungerstatus
             return f"{self.name} tuggar försiktigt på {food} medan den leker."
         return f"{self.name} vägrar äta {food} och försöker leka istället."
 

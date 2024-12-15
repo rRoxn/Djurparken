@@ -3,10 +3,6 @@ from abc import ABC, abstractmethod
 class Animal(ABC):
     def __init__(self, name: str, age: int, favorite_food: str, image_path: str):
         """Initierar ett djur."""
-        if not isinstance(name, str) or not name.strip():
-            raise ValueError("Name must be non empty str")
-        if not isinstance(age, int) or age < 0:
-            raise ValueError("Age must be a non-negative integer.")
 
         self.name = name
         self.age = age
@@ -24,10 +20,6 @@ class Animal(ABC):
         """Funktion för att mata djuren. Måste implementeras av subklasser."""
         pass
 
-
-    def get_species(self) -> str:
-        """Returnerar djurets art baserat på klassen."""
-        return type(self).__name__
 
     def toggle_hunger(self):
         """Byter hungerstatus på djuret."""

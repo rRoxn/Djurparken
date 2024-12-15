@@ -12,10 +12,10 @@ class Giraffe(Animal):
 
     def eat(self, food: str) -> str:
         """Giraffens specifika sätt att äta."""
-        if not self.hungry:
+        if not self.is_hungry():  # Använd basklassens metod
             return f"{self.name} är inte hungrig."
-        if self.validate_food(food):
-            self.hungry = False
+        if self.validate_food(food):  # Kontrollera favoritmat
+            self.toggle_hunger()  # Byt hungerstatus
             return f"{self.name} sträcker sin långa hals för att nå {food}."
         return f"{self.name} ignorerar {food} och letar efter blad istället."
 

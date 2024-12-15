@@ -59,6 +59,12 @@ class Zoo:
                 return f"Besökaren {name} har tagits bort."
         return f"Ingen besökare med namnet {name} hittades."
 
+    def interact_with_animal(self, name, interaction_type):
+        for animal in self.animals:
+            if animal.name == name:
+                return animal.interact()
+        return f"Inget djur med {name} hittat."
+
     def __str__(self):
         """Returnerar en strängrepresentation av djurparken."""
         return (

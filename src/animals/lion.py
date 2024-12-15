@@ -12,10 +12,10 @@ class Lion(Animal):
 
     def eat(self, food: str) -> str:
         """Lejonets specifika sätt att äta."""
-        if not self.hungry:
+        if not self.is_hungry():  # Använd basklassens metod för att kontrollera hunger
             return f"{self.name} är inte hungrig."
-        if self.validate_food(food):
-            self.hungry = False
+        if self.validate_food(food):  # Kontrollera om det är favoritmat
+            self.toggle_hunger()  # Växla hungerstatus med basklassens metod
             return f"{self.name} sliter i sig {food} med en kraftig riv!"
         return f"{self.name} rynkar på nosen och vägrar äta {food}."
 

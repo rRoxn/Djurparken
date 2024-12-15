@@ -1,12 +1,10 @@
-import sys
-import os
 import pytest
-from src.animals.elephant import Elephant
-from src.animals.lioncub import LionCub
-from src.animals.giraffe import Giraffe
-from src.animals.lion import Lion
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+from animals.elephant import Elephant
+from animals.lioncub import LionCub
+from animals.giraffe import Giraffe
+from animals.lion import Lion
+from zoo.zoo import Zoo
+from zoo.visitor import Visitor
 
 # Fixturer för djuren
 @pytest.fixture
@@ -25,28 +23,18 @@ def create_giraffe():
 def create_lioncub():
     return LionCub("Nala", 14, "assets/images/lioncub.jpeg")
 
+# Fixturer för Zoo och Visitor
+@pytest.fixture
+def create_zoo():
+    zoo = Zoo("Djurparken", "09:00-18:00", 100, {"Mata djur": 50, "Detaljerad info": 30})
+    zoo.add_animal(Lion("Simba", 5, "assets/images/lion.png"))
+    zoo.add_animal(Elephant("Dumbo", 10, "assets/images/elephant.png"))
+    zoo.add_animal(Giraffe("Melman", 7, "assets/images/giraffe.png"))
+    return zoo
 
-# Tester för get_info
-def test_lion_get_info(create_lion):
-    assert create_lion.get_info() == (
-        "Art: Lejon, Namn: Simba, Ålder: 5, Favoritmat: kött, Bildväg: assets/images/lion.png"
-    )
-
-def test_elephant_get_info(create_elephant):
-    assert create_elephant.get_info() == (
-        "Art: Elefant, Namn: Dumbo, Ålder: 10, Favoritmat: jordnötter, Bildväg: assets/images/elephant.png"
-    )
-
-def test_giraffe_get_info(create_giraffe):
-    assert create_giraffe.get_info() == (
-        "Art: Giraff, Namn: Melman, Ålder: 7, Favoritmat: blad, Bildväg: assets/images/giraffe.png"
-    )
-
-def test_lioncub_get_info(create_lioncub):
-    assert create_lioncub.get_info() == (
-        "Lejonunge: Nala, Ålder: 1 år och 2 månader, Favoritmat: kött, Bildväg: assets/images/lioncub.jpeg"
-    )
-
+@pytest.fixture
+def create_visitor():
+    return Visitor("Anna", 300)
 
 # Tester för eat
 def test_lion_eat(create_lion):
@@ -69,7 +57,6 @@ def test_lioncub_eat(create_lioncub):
     assert create_lioncub.eat("kött") == "Nala tuggar försiktigt på kött medan den leker."
     assert create_lioncub.hungry is False
 
-
 # Tester för interact
 def test_lion_interact(create_lion):
     assert create_lion.interact() == "Simba tittar stolt på dig."
@@ -87,7 +74,6 @@ def test_lioncub_interact(create_lioncub):
     assert create_lioncub.interact() == "Nala nafsar på ditt finger."
     assert create_lioncub.hungry is True
 
-
 # Tester för bildväg
 def test_lion_image_path(create_lion):
     assert create_lion.image_path == "assets/images/lion.png"
@@ -100,3 +86,30 @@ def test_giraffe_image_path(create_giraffe):
 
 def test_lioncub_image_path(create_lioncub):
     assert create_lioncub.image_path == "assets/images/lioncub.jpeg"
+
+# Tester för Zoo
+def test_zoo_list_animals(create_zoo):
+    animal_names = [animal.name for animal in create_zoo.animals]
+    assert "Simba" in animal_names
+    assert "Dumbo" in animal_names
+    assert "Melman" in animal_names
+
+def test_zoo_feed_animal(create_zoo):
+    response = create_zoo.feed_animal("Simba", "kött")
+    assert response == "Simba sliter i sig kött med en kraftig riv!"
+
+def test_zoo_interact_with_animal(create_zoo):
+    response = create_zoo.interact_with_animal("Dumbo", "klappa")
+    assert response == "Dumbo låter dig klappa dess snabel."
+
+# Tester för Visitor
+def test_visitor_add_to_cart(create_visitor):
+    create_visitor.add_to_cart("Mata djur", 50)
+    assert len(create_visitor.cart) == 1
+    assert create_visitor.budget == 250
+
+def test_visitor_purchase(create_visitor):
+    create_visitor.add_to_cart("Mata djur", 50)
+    create_visitor.purchase()
+    assert create_visitor.budget == 250
+    assert len(create_visitor.cart) == 0

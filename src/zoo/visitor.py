@@ -5,13 +5,13 @@ class Visitor:
         self.budget = budget
         self.cart = []  # Lista över valda tillval
 
-    def add_to_cart(self, item: str, price: float) -> str:
+    def add_to_cart(self, item: str, price: float) -> bool:
         """Lägger till ett tillval i kundvagnen om budgeten räcker."""
         if self.budget >= price:
             self.cart.append((item, price))
             self.budget -= price
-            return f"Tillvalet '{item}' har lagts till i kundvagnen."
-        return f"Tillvalet '{item}' kunde inte läggas till, budgeten räcker inte."
+            return True  # Returnera True om tillvalet lades till
+        return False  # Returnera False om budgeten inte räckte
 
     def summarize_cart(self) -> str:
         """Visar kundvagnen och totalkostnaden."""
