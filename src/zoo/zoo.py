@@ -6,12 +6,18 @@ class Zoo:
         self.ticket_price = ticket_price
         self.addons = addons
         self.animals = []  # Lista över alla djur
-        self.selected_addons = []  # Lista över valda tillval
-        self.visitors = []  # Lista över besökare
+        self.visitors = []  # Lista över besökare, max 3
 
     def add_animal(self, animal):
         """Lägger till ett djur i djurparken."""
         self.animals.append(animal)
+
+    def list_animals(self, detailed=False):
+        """Returnerar en lista med förenklad eller detaljerad information om djuren."""
+        if detailed:
+            return [str(animal) for animal in self.animals]  # Full info med __str__
+        else:
+            return self.animals  # Returnera djurobjekt
 
     def show_ticket_price(self) -> str:
         """Returnerar biljettpris."""
@@ -25,37 +31,33 @@ class Zoo:
         """Visar tillgängliga tillval och deras priser."""
         return "\n".join(f"{addon}: {price} SEK" for addon, price in self.addons.items())
 
-    def add_to_cart(self, addon: str) -> str:
-        """Lägger till ett tillval i kundvagnen om det existerar."""
-        if addon in self.addons:
-            self.selected_addons.append(addon)
-            return f"Tillvalet '{addon}' har lagts till i kundvagnen."
-        return f"Tillvalet '{addon}' är inte tillgängligt."
+    def feed_animal(self, name: str, food: str) -> str:
+        """Matar ett djur i djurparken."""
+        for animal in self.animals:
+            if animal.name.lower() == name.lower():
+                return animal.eat(food)
+        return f"Inget djur med namnet '{name}' hittades."
 
-    def summarize_cart(self) -> str:
-        """Summerar valda tillval i kundvagnen."""
-        if not self.selected_addons:
-            return "Kundvagnen är tom."
-        total_price = sum(self.addons[addon] for addon in self.selected_addons)
-        summary = "\n".join(self.selected_addons)
-        return f"Valda tillval:\n{summary}\nTotalpris: {total_price} SEK."
-
-    def purchase(self) -> str:
-        """Slutför köpet av valda tillval."""
-        if not self.selected_addons:
-            return "Kundvagnen är tom. Inget att köpa."
-        self.selected_addons.clear()
-        return "Köpet har slutförts. Tack för ditt besök!"
-
-    def add_visitor(self, visitor) -> None:
-        """Lägger till en besökare till djurparken."""
-        self.visitors.append(visitor)
+    def add_visitor(self, visitor) -> str:
+        """Lägger till en besökare om maxgränsen inte är nådd."""
+        if len(self.visitors) < 3:
+            self.visitors.append(visitor)
+            return f"Besökaren {visitor.name} har lagts till."
+        return "Maxgränsen för 3 besökare är nådd."
 
     def list_visitors(self) -> str:
-        """Returnerar en lista med alla besökare."""
+        """Returnerar en lista över alla registrerade besökare."""
         if not self.visitors:
-            return "Inga besökare i djurparken."
-        return "\n".join(visitor.name for visitor in self.visitors)
+            return "Inga besökare är registrerade."
+        return "\n".join(str(visitor) for visitor in self.visitors)
+
+    def remove_visitor(self, name: str) -> str:
+        """Tar bort en specifik besökare från listan."""
+        for visitor in self.visitors:
+            if visitor.name.lower() == name.lower():
+                self.visitors.remove(visitor)
+                return f"Besökaren {name} har tagits bort."
+        return f"Ingen besökare med namnet {name} hittades."
 
     def __str__(self):
         """Returnerar en strängrepresentation av djurparken."""
@@ -63,5 +65,6 @@ class Zoo:
             f"Djurparken: {self.name}\n"
             f"Öppettider: {self.opening_hours}\n"
             f"Biljettpris: {self.ticket_price} SEK\n"
-            f"Antal djur: {len(self.animals)}"
+            f"Antal djur: {len(self.animals)}\n"
+            f"Antal besökare: {len(self.visitors)}"
         )

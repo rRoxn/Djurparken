@@ -11,99 +11,161 @@ def main():
         name="Eggis Zoo",
         opening_hours="09:00 - 18:00",
         ticket_price=150.0,
-        addons={"Mata djur": 50.0, "Detaljerad info": 30.0},
+        addons={"Mata djur": 50.0, "Interagera med djur": 70.0},
     )
 
     # Lägg till djur
-    simba = Lion("Simba", 5, "assets/images/lion.png")
-    nala = LionCub("Nala", 14, "assets/images/lioncub.jpeg")
-    melman = Giraffe("Melman", 7, "assets/images/giraffe.png")
-    dumbo = Elephant("Dumbo", 24, "assets/images/elephant.png")
-
-    my_zoo.add_animal(simba)
-    my_zoo.add_animal(nala)
-    my_zoo.add_animal(melman)
-    my_zoo.add_animal(dumbo)
-
-    visitors = {}
-
-    print("Välkommen till Djurparken!")
-    print("1. Visa information om djurparken")
-    print("2. Köpa biljett")
-    print("3. Logga in som besökare")
-    print("4. Avsluta")
+    my_zoo.add_animal(Lion("Simba", 5, "assets/images/lion.png"))
+    my_zoo.add_animal(LionCub("Nala", 14, "assets/images/lioncub.jpeg"))
+    my_zoo.add_animal(Giraffe("Melman", 7, "assets/images/giraffe.png"))
+    my_zoo.add_animal(Elephant("Dumbo", 24, "assets/images/elephant.png"))
 
     while True:
-        choice = input("\nVad vill du göra? (1-4): ")
+        print("\n--- Startsida ---")
+        print("1. Visa enkel information om djurparken")
+        print("2. Registrera ny besökare och köp biljett")
+        print("3. Visa och hantera besökare")
+        print("4. Utforska djurparken")
+        print("5. Avsluta")
+
+        choice = input("\nVad vill du göra? (1-5): ")
         if choice == "1":
-            print(f"\nParkens öppettider: {my_zoo.show_opening_hours()}")
-            print(f"Biljettkostnad: {my_zoo.show_ticket_price()}")
-            print("\nTillgängliga tillval och priser:")
-            print(my_zoo.show_addon_prices())
-            print("\nDjur i parken:")
-            for animal in my_zoo.list_animals():
-                print(animal)
+            show_simple_zoo_info(my_zoo)
         elif choice == "2":
-            name = input("Ange ditt namn: ")
-            budget = float(input("Ange din budget: "))
-            visitor = Visitor(name, budget)
-            visitors[name] = visitor
-            print(f"\nVälkommen {name}! Din budget är {budget} SEK.")
+            if len(my_zoo.visitors) < 3:
+                register_visitor(my_zoo)
+            else:
+                print("Maxgränsen för 3 besökare är nådd.")
         elif choice == "3":
-            name = input("Ange ditt namn: ")
-            if name not in visitors:
-                print(f"\nIngen besökare med namnet {name} hittades.")
-                continue
-            visitor = visitors[name]
-            visitor_menu(visitor, my_zoo)
+            manage_visitors(my_zoo)
         elif choice == "4":
+            visit_park(my_zoo)
+        elif choice == "5":
             print("Tack för ditt besök! Välkommen åter!")
             break
         else:
             print("Ogiltigt val, försök igen.")
 
-def visitor_menu(visitor, zoo):
-    print(f"\nVälkommen tillbaka, {visitor.name}!")
-    print("1. Visa tillgängliga tillval")
-    print("2. Lägg till tillval")
-    print("3. Utforska djurparken")
-    print("4. Gå tillbaka")
+def show_simple_zoo_info(zoo):
+    """Visar grundläggande information om djurparken."""
+    print(f"\nParkens öppettider: {zoo.show_opening_hours()}")
+    print(f"Biljettkostnad: {zoo.show_ticket_price()}")
+    print("\nTillgängliga tillval:")
+    for i, (addon, price) in enumerate(zoo.addons.items(), start=1):
+        print(f"{i}. {addon}: {price} SEK")
+    print("\nDjur i parken:")
+    for animal in zoo.list_animals():
+        print(f"Art: {animal.get_species()}, Namn: {animal.name}")
 
+def register_visitor(zoo):
+    """Registrerar en ny besökare och köper biljett."""
+    name = input("Ange namn för besökaren: ")
+    budget = float(input("Ange budget för besökaren: "))
+
+    if budget < zoo.ticket_price:
+        print("\nDu har inte tillräckligt med pengar för att köpa en biljett.")
+        return
+
+    budget -= zoo.ticket_price
+    visitor = Visitor(name, budget)
+    print(zoo.add_visitor(visitor))
+    print(f"\nVälkommen {name}! Din återstående budget är {budget} SEK.")
+
+    # Låt besökaren köpa tillval direkt
+    purchase_addons(visitor, zoo)
+
+def manage_visitors(zoo):
+    """Visa och hantera besökare i djurparken."""
     while True:
-        choice = input("\nVad vill du göra? (1-4): ")
+        print("\n--- Hantera besökare ---")
+        print(zoo.list_visitors())
+        print("1. Ta bort en besökare")
+        print("2. Gå tillbaka till startsidan")
+        choice = input("\nVad vill du göra? (1-2): ")
         if choice == "1":
-            print("\nTillgängliga tillval:")
-            print(zoo.show_addon_prices())
+            name = input("Ange namnet på besökaren att ta bort: ")
+            print(zoo.remove_visitor(name))
         elif choice == "2":
-            addon = input("Ange tillval: ")
-            if addon in zoo.addons:
-                price = zoo.addons[addon]
-                print(visitor.add_to_cart(addon, price))
-            else:
-                print(f"{addon} finns inte som tillval.")
-        elif choice == "3":
-            explore_park(visitor, zoo)
-        elif choice == "4":
-            print("Går tillbaka till huvudmenyn...")
+            print("Går tillbaka till startsidan...")
             break
         else:
             print("Ogiltigt val, försök igen.")
 
-def explore_park(visitor, zoo):
-    print(f"\nUtforskar parken för {visitor.name}:")
-    if "Detaljerad info" in [item[0] for item in visitor.cart]:
-        print("\nDjur i parken:")
-        for animal in zoo.list_animals():
-            print(animal)
-    else:
-        print("Du har inte köpt tillgång till detaljerad information.")
+def visit_park(zoo):
+    """Tillåter en registrerad besökare att utforska djurparken."""
+    if not zoo.visitors:
+        print("\nInga besökare är registrerade ännu.")
+        return
 
-    if "Mata djur" in [item[0] for item in visitor.cart]:
-        name = input("Ange djurets namn för matning: ")
-        food = input("Vad vill du mata djuret med? ")
-        print(zoo.feed_animal(name, food))
-    else:
-        print("Du har inte köpt tillgång till att mata djur.")
+    print("\nVälj en besökare att logga in som:")
+    for i, visitor in enumerate(zoo.visitors, start=1):
+        print(f"{i}. {visitor.name} (Budget: {visitor.budget} SEK)")
+
+    try:
+        choice = int(input("\nAnge nummer för besökaren: ")) - 1
+        if choice < 0 or choice >= len(zoo.visitors):
+            print("Ogiltigt val.")
+            return
+        visitor = zoo.visitors[choice]
+    except ValueError:
+        print("Ogiltig inmatning.")
+        return
+
+    print(f"\nVälkommen {visitor.name}! Du har tillgång till den detaljerade djurvyn.")
+    while True:
+        print(f"\n--- Utforska parken: {visitor.name} ---")
+        print("1. Visa detaljerad information om djur")
+        print("2. Interagera med ett djur (kräver tillval)")
+        print("3. Mata ett djur (kräver tillval)")
+        print("4. Gå tillbaka till startsidan")
+
+        choice = input("\nVad vill du göra? (1-4): ")
+        if choice == "1":
+            for animal_info in zoo.list_animals(detailed=True):
+                print(animal_info)
+        elif choice == "2":
+            if "Interagera med djur" in [item[0] for item in visitor.cart]:
+                name = input("Ange djurets namn: ")
+                for animal in zoo.animals:
+                    if animal.name.lower() == name.lower():
+                        print(animal.interact())
+                        break
+                else:
+                    print(f"Inget djur med namnet {name} hittades.")
+            else:
+                print("Du har inte köpt tillvalet för att interagera med djur.")
+        elif choice == "3":
+            if "Mata djur" in [item[0] for item in visitor.cart]:
+                name = input("Ange djurets namn: ")
+                food = input("Vad vill du mata djuret med? ")
+                print(zoo.feed_animal(name, food))
+            else:
+                print("Du har inte köpt tillvalet för att mata djur.")
+        elif choice == "4":
+            print("Går tillbaka till startsidan...")
+            break
+        else:
+            print("Ogiltigt val, försök igen.")
+
+def purchase_addons(visitor, zoo):
+    """Tillåter besökaren att köpa tillval."""
+    print("\nTillgängliga tillval:")
+    addons = list(zoo.addons.items())
+    for i, (addon, price) in enumerate(addons, start=1):
+        print(f"{i}. {addon}: {price} SEK")
+
+    while True:
+        try:
+            choice = int(input("Ange nummer för tillval att köpa (eller skriv '0' för att avsluta): "))
+            if choice == 0:
+                break
+            if 1 <= choice <= len(addons):
+                addon, price = addons[choice - 1]
+                print(visitor.add_to_cart(addon, price))
+            else:
+                print("Ogiltigt val, försök igen.")
+        except ValueError:
+            print("Ogiltig inmatning, försök igen.")
 
 if __name__ == "__main__":
     main()

@@ -23,10 +23,3 @@ class Giraffe(Animal):
         """Returnerar artens namn."""
         return "Giraff"
 
-    def __str__(self) -> str:
-        """Returnerar en strängrepresentation av giraffens attribut."""
-        return (
-            f"Art: {self.get_species()}, Namn: {self.name}, "
-            f"Ålder: {self.age}, Favoritmat: {self.favorite_food}, Bildväg: {self.image_path}, "
-            f"Hungrig: {'Ja' if self.hungry else 'Nej'}"
-            )

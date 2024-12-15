@@ -19,14 +19,8 @@ class Elephant(Animal):
             return f"{self.name} plockar upp {food} med snabeln och äter det långsamt."
         return f"{self.name} trumpetar högt och vägrar äta {food}."
 
+
     def get_species(self) -> str:
         """Returnerar artens namn."""
         return "Elefant"
 
-    def __str__(self) -> str:
-        """Returnerar en strängrepresentation av elefantens attribut."""
-        return (
-            f"Art: {self.get_species()}, Namn: {self.name}, "
-            f"Ålder: {self.age}, Favoritmat: {self.favorite_food}, Bildväg: {self.image_path}, "
-            f"Hungrig: {'Ja' if self.hungry else 'Nej'}"
-        )

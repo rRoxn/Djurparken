@@ -13,7 +13,7 @@ class Visitor:
             return f"Tillvalet '{item}' har lagts till i kundvagnen."
         return f"Tillvalet '{item}' kunde inte läggas till, budgeten räcker inte."
 
-    def view_cart(self) -> str:
+    def summarize_cart(self) -> str:
         """Visar kundvagnen och totalkostnaden."""
         if not self.cart:
             return "Kundvagnen är tom."

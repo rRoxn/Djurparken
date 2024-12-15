@@ -11,7 +11,7 @@ class Animal(ABC):
         self.name = name
         self.age = age
         self.favorite_food = favorite_food
-        self.hungry = False
+        self.hungry = True
         self.image_path = image_path
 
     @abstractmethod
@@ -24,12 +24,6 @@ class Animal(ABC):
         """Funktion för att mata djuren. Måste implementeras av subklasser."""
         pass
 
-    def get_info(self) -> str:
-        """Ger grundläggande information om djuret."""
-        return (
-            f"Art: {self.get_species()}, Namn: {self.name}, "
-            f"Ålder: {self.age}, Favoritmat: {self.favorite_food}, Bildväg: {self.image_path}"
-        )
 
     def get_species(self) -> str:
         """Returnerar djurets art baserat på klassen."""
@@ -47,3 +41,11 @@ class Animal(ABC):
         """Validerar om given mat är djurets favoritmat."""
         return food.lower() == self.favorite_food.lower()
 
+
+    def __str__(self):
+        """Returnerar en strängrepresentation av djuret."""
+        return (
+            f"Art: {self.get_species()}, Namn: {self.name}, "
+            f"Ålder: {self.age}, Favoritmat: {self.favorite_food}, "
+            f"Hungrig: {'Ja' if self.hungry else 'Nej'}"
+        )
