@@ -87,19 +87,19 @@ def test_giraffe_image_path(create_giraffe):
 def test_lioncub_image_path(create_lioncub):
     assert create_lioncub.image_path == "assets/images/lioncub.jpeg"
 
-# Tester för Zoo
 def test_zoo_list_animals(create_zoo):
-    animal_names = [animal.name for animal in create_zoo.animals]
+    animal_names = [animal.name for animal in create_zoo.list_animals()]
     assert "Simba" in animal_names
     assert "Dumbo" in animal_names
     assert "Melman" in animal_names
+
 
 def test_zoo_feed_animal(create_zoo):
     response = create_zoo.feed_animal("Simba", "kött")
     assert response == "Simba sliter i sig kött med en kraftig riv!"
 
 def test_zoo_interact_with_animal(create_zoo):
-    response = create_zoo.interact_with_animal("Dumbo", "klappa")
+    response = create_zoo.interact_with_animal("Dumbo")
     assert response == "Dumbo låter dig klappa dess snabel."
 
 # Tester för Visitor

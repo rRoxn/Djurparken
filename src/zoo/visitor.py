@@ -30,4 +30,4 @@ class Visitor:
 
     def __str__(self):
         """Returnerar en strängrepresentation av besökaren."""
-        return f"Besökare: {self.name}, Budget: {self.budget} SEK"
+        return f"{self.name} - Budget: {self.budget:.2f}"
