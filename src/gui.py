@@ -528,12 +528,19 @@ class SelectVisitorPage(tk.Frame):
 
         for visitor in self.zoo._visitors:  # Direkt åtkomst till besökarlistan
             name = visitor.name
-            budget = f"{visitor.budget:.2f}"
+            addons = ", ".join(visitor.cart) if visitor.cart else "Inga tillval"
 
-            # Skapa en knapp för varje besökare och skicka endast namnet
-            tk.Button(self.visitor_buttons_frame, text=f"{name} - Budget: {budget} SEK",
-                      bg="lightblue", font=("Arial", 12),
-                      command=lambda v=name: self.select_visitor(v)).pack(pady=5)
+            # Skapa en stor knapp med röd bakgrund och vit text
+            button_text = f"{name}\nTillval: {addons}"
+            tk.Button(self.visitor_buttons_frame,
+                      text=button_text,
+                      bg="red",  # Bakgrundsfärg
+                      fg="white",  # Textfärg för synlighet
+                      font=("Arial", 14),  # Större textstorlek
+                      width=30,  # Justera bredd
+                      height=3,  # Justera höjd
+                      command=lambda v=name: self.select_visitor(v)
+                      ).pack(pady=10)  # Extra avstånd mellan knappar
 
     def select_visitor(self, visitor_name):
         """Loggar in vald besökare och navigerar till Utforska-sidan."""
