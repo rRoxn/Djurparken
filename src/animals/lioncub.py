@@ -19,12 +19,13 @@ class LionCub(Lion):
         """Returnerar åldern i månader."""
         return self.months
 
-    def get_species(self) -> str:
-        """Returnerar artens namn."""
-        return "Lejon"
 
     def interact(self) -> str:
         """Interaktion för lejonungen."""
         self.hungry = True
         return f"{self.name} nafsar på ditt finger."
+
+    def get_species(self) -> str:
+        """Returnerar artens namn."""
+        return "Lejon"
 

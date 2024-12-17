@@ -16,12 +16,23 @@ class MainApp(tk.Tk):
         self.geometry("800x600")
         self.frames = {}
 
+
         # Container för alla sidor
         container = tk.Frame(self)
-        container.pack(fill="both", expand=True)
+        container.grid(row=0, column=0, sticky="nsew")  # Ändra från pack till grid
+
+        # Gör att container expanderar
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        # Öppna i fullskärm
+        self.state('zoomed')
+
 
         # Lägg till sidor
-        for Page in (StartPage, RegisterVisitorPage, ManageVisitorsPage, ZooInfoPage, AddAddonsPage, SelectVisitorPage, ExploreParkPage, DetailedAnimalPage, SearchAnimalPage):
+        for Page in (StartPage, RegisterVisitorPage, ManageVisitorsPage, ZooInfoPage, AddAddonsPage, SelectVisitorPage, ExploreParkPage, DetailedAnimalPage, SearchAnimalPage, InteractAnimalPage, FeedAnimalPage):
             page_name = Page.__name__
             frame = Page(parent=container, controller=self, zoo=self.zoo)
             self.frames[page_name] = frame
@@ -42,56 +53,74 @@ class MainApp(tk.Tk):
             frame.update_visitors()  # Uppdatera besökarknappar
         frame.tkraise()
 
+
+# Klass för Startsida
 class StartPage(tk.Frame):
     def __init__(self, parent, controller, zoo):
         """Initialiserar startsidan för djurparken."""
-        super().__init__(parent, bg="white")
+        super().__init__(parent, bg="#1A3636")
         self.controller = controller
         self.zoo = zoo
 
-        # Titel för startsidan
-        tk.Label(self, text="Välkommen till Eggis Zoo", font=("Arial", 24), bg="white").pack(pady=20)
+        # Gör sidan expanderbar
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
 
-        # Bildruta - här kan en bild läggas in senare
-        image_frame = tk.Frame(self, bg="lightcoral", width=700, height=150)
+        # Huvudinnehåll i mitten
+        content_frame = tk.Frame(self, bg="lightblue")
+        content_frame.grid(row=1, column=1, sticky="nsew", padx=20, pady=20)
+
+        # Titel för startsidan
+        tk.Label(content_frame, text="Välkommen till Eggis Zoo", font=("Arial", 24, "bold"), bg="#1A3636").pack(pady=20)
+
+        # Bildruta med bild från assets/images/bild.png
+        image_frame = tk.Frame(content_frame, bg="white", relief="ridge", bd=3)
         image_frame.pack(pady=10)
-        tk.Label(image_frame, text="Någon bild här", bg="lightcoral", font=("Arial", 14)).pack(expand=True)
+
+        try:
+            image_path = "../assets/images/bridge.jpg"  # bild sökväg
+            image = Image.open(image_path)
+            image = image.resize((500, 150))  # Anpassa bildens storlek
+            photo = ImageTk.PhotoImage(image)
+
+            image_label = tk.Label(image_frame, image=photo, bg="white")
+            image_label.image = photo  # Håll en referens för att undvika att bilden försvinner
+            image_label.pack()
+        except Exception as e:
+            tk.Label(image_frame, text="Bild kunde inte laddas", bg="lightcoral", font=("Arial", 14)).pack(expand=True)
+            print(f"Fel: {e}")
 
         # Menyram för knappar
-        menu_frame = tk.Frame(self, bg="lightgray", width=700, height=150)
-        menu_frame.pack(pady=10)
-        tk.Label(menu_frame, text="Meny", font=("Arial", 16), bg="lightgray").pack(pady=5)
+        menu_frame = tk.Frame(content_frame, bg="lightgray", relief="groove", bd=5, padx=10, pady=10)
+        menu_frame.pack(pady=20)
 
-        # Första raden med knappar
-        button_row1 = tk.Frame(menu_frame, bg="lightgray")
-        button_row1.pack()
+        # Knappar i grid-layout med 2 knappar per rad
+        buttons = [
+            ("Se info", "ZooInfoPage"),
+            ("Köp biljett", "RegisterVisitorPage"),
+            ("Hantera besökare", "ManageVisitorsPage"),
+            ("Utforska djurparken", "SelectVisitorPage"),
+            ("Avsluta Program", "quit")
+        ]
 
-        tk.Button(button_row1, text="Visa enkel information om djurparken", font=("Arial", 14), bg="red", fg="white",
-                  width=30, command=lambda: controller.show_page("ZooInfoPage")).pack(side="left", padx=10, pady=5)
+        for idx, (text, page) in enumerate(buttons):
+            if page == "quit":
+                cmd = controller.quit  # Avsluta programmet
+            else:
+                cmd = lambda p=page: controller.show_page(p)
+            row, col = divmod(idx, 2)  # Dela upp i rader och kolumner
+            tk.Button(menu_frame, text=text, font=("Arial", 14, "bold"), bg="red", fg="white", width=20, height=2,
+                      command=cmd).grid(row=row, column=col, padx=10, pady=10)
 
-        tk.Button(button_row1, text="Registrera ny besökare och köp biljett", font=("Arial", 14), bg="red", fg="white",
-                  width=30, command=lambda: controller.show_page("RegisterVisitorPage")).pack(side="left", padx=10, pady=5)
-
-        # Andra raden med knappar
-        button_row2 = tk.Frame(menu_frame, bg="lightgray")
-        button_row2.pack()
-
-        tk.Button(button_row2, text="Visa och hantera besökare", font=("Arial", 14), bg="red", fg="white",
-                  width=30, command=lambda: controller.show_page("ManageVisitorsPage")).pack(side="left", padx=10, pady=5)
-
-        tk.Button(button_row2, text="Utforska djurparken", font=("Arial", 14), bg="red", fg="white",
-                  width=30, command=lambda: controller.show_page("SelectVisitorPage")).pack(side="left", padx=10, pady=5)
-
-        # Sökfält för att söka efter djur
-        search_frame = tk.Frame(self, bg="white")
-        search_frame.pack(pady=20)
-        tk.Label(search_frame, text="Sök", font=("Arial", 14), bg="white").grid(row=0, column=0, padx=5)
-        self.search_entry = tk.Entry(search_frame, font=("Arial", 14), width=30)
-        self.search_entry.grid(row=0, column=1, padx=5)
-
-        # Sidfot med ytterligare information
+        # Sidfot med info
         footer_label = tk.Label(self, text="Sidfot med info", bg="lightgray", font=("Arial", 12))
-        footer_label.pack(side="bottom", fill="x")
+        footer_label.grid(row=2, column=0, columnspan=3, sticky="ew")
+
+
 
 
 
@@ -140,26 +169,47 @@ class RegisterVisitorPage(tk.Frame):
         self.message_label = tk.Label(self, text="", font=("Arial", 14), bg="#ffffff", fg="green")
         self.message_label.pack(pady=10)
 
+        # Informationsetikett för biljettkostnad
+        ticket_info_label = tk.Label(self, text="En biljett till djurparken kostar 150 SEK och dras från din budget.",
+                                     font=("Arial", 12), bg="#ffffff", fg="#b30000")
+        ticket_info_label.pack(pady=(5, 0))  # Liten padding ovanför
+
     def register_visitor(self):
         """Registrerar en ny besökare och visar bekräftelse."""
         name = self.name_entry.get()
         budget_text = self.budget_entry.get()
 
         # Validera inmatning
-        if not name or not budget_text.isdigit():
-            self.show_message("Ange ett giltigt namn och budget!", error=True)
+        if not name or not budget_text.isdigit() or float(budget_text) < 150:
+            self.show_message("Ange ett giltigt namn och budget (minst 150 SEK)!", error=True)
             return
 
-        # Skapa besökare
-        visitor = Visitor(name, float(budget_text))
-        result = self.zoo.add_visitor(visitor)  # Använder add_visitor() istället för direktåtkomst
+        # Dra av biljettkostnaden (150 SEK)
+        budget = float(budget_text) - 150
 
-        if "har lagts till" in result:  # Kontrollera om besökaren lades till framgångsrikt
-            self.show_message(f"{name} har registrerats med budget {visitor.budget:.2f} SEK.", error=False)
-            # Byt sida automatiskt efter 2 sekunder
+        # Skapa besökare
+        visitor = Visitor(name, budget)
+        result = self.zoo.add_visitor(visitor)
+
+        if "har lagts till" in result:
+            # Visa bekräftelsemeddelande
+            self.show_message(f"{name} har registrerats med biljett (150 SEK) och budget {visitor.budget:.2f} SEK.",
+                              error=False)
+
+            # Rensa inmatningsfälten, men lämna meddelandet kvar
+            self.reset_fields(keep_message=True)
+
+            # Gå automatiskt till tillvalsidan efter 2 sekunder
             self.after(2000, lambda: self.next_page(visitor))
         else:
-            self.show_message(result, error=True)  # Visa felmeddelande om maxgränsen nåddes
+            self.show_message(result, error=True)  # Felmeddelande vid maxgräns
+
+    def reset_fields(self, keep_message=False):
+        """Nollställer alla inmatningsfält och meddelanderuta om inte annat anges."""
+        self.name_entry.delete(0, tk.END)
+        self.budget_entry.delete(0, tk.END)
+        if not keep_message:
+            self.message_label.config(text="")
 
     def show_message(self, text, error=False):
         """Visar ett meddelande på sidan."""
@@ -287,27 +337,36 @@ class AddAddonsPage(tk.Frame):
 
     def set_visitor(self, visitor):
         """Sätter aktuell besökare och uppdaterar sidan."""
+        print("set_visitor anropades!")  # Lägg till denna för att se om den körs
         self.visitor = visitor
         self.cart = []  # Töm kundvagnen
-        self.cart_listbox.delete(0, tk.END)  # Rensa listbox
+        self.cart_listbox.delete(0, tk.END)  # Rensa
+        print(f"Tillval: {self.zoo._addons}")  # Debug: Skriv ut tillval
         self.info_label.config(text=f"Välkommen {visitor.name}! Din budget är {visitor.budget:.2f} SEK.")
         self.display_addons()
 
     def display_addons(self):
         """Visar alla tillval som knappar."""
+        # Kontrollera om addons finns
+        if not self.zoo._addons:
+            self.info_label.config(text="Inga tillval tillgängliga!", fg="red")
+            return
+
         # Rensa gamla widgets
         for widget in self.addons_frame.winfo_children():
             widget.destroy()
 
         # Skapa knappar för tillval
-        for addon, price in self.zoo._addons.items():  # Hämtar tillval via addons
+        for addon, price in self.zoo._addons.items():
             addon_frame = tk.Frame(self.addons_frame, bg="#ffcccc", bd=1, relief="ridge")
             addon_frame.pack(fill="x", pady=5, padx=5)
 
+            # Label som visar tillvalets namn och pris
             addon_label = tk.Label(addon_frame, text=f"{addon} - {price:.2f} SEK",
                                    font=("Arial", 12), bg="#ffcccc", fg="#b30000")
             addon_label.pack(side="left", padx=10, pady=5)
 
+            # Knappar för att lägga till tillval i kundvagnen
             buy_button = tk.Button(addon_frame, text="Lägg till", bg="#ff4d4d", fg="white",
                                    activebackground="#e63939",
                                    font=("Arial", 10, "bold"),
@@ -327,14 +386,15 @@ class AddAddonsPage(tk.Frame):
     def confirm_and_go_back(self):
         """Bekräftar kundvagnens innehåll och navigerar tillbaka till startsidan."""
         if not self.cart:
-            self.info_label.config(text="Du har inte valt några tillval att bekräfta.", fg="red")
-            return
+            # Informera att inga tillval valdes, men gå ändå tillbaka
+            self.info_label.config(text="Inga tillval valdes. Går tillbaka till startsidan...", fg="blue")
+        else:
+            # Lägg till valda tillval i besökarens kundvagn
+            for addon, price in self.cart:
+                self.visitor.add_to_cart(addon, price)  # Använd visitor-metoden för att hantera tillval
+            self.info_label.config(text="Tillvalen har bekräftats! Går tillbaka till startsidan...", fg="green")
 
-        # Lägg till valda tillval i besökarens kundvagn
-        for addon, price in self.cart:
-            self.visitor.add_to_cart(addon, price)  # Använd visitor-metoden för att hantera tillval
-
-        self.info_label.config(text="Tillvalen har bekräftats! Går tillbaka till startsidan...", fg="green")
+        # Vänta 2 sekunder och gå tillbaka till startsidan
         self.after(2000, lambda: self.controller.show_page("StartPage"))
 
 
@@ -350,17 +410,27 @@ class ZooInfoPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(2, weight=1)
 
+        # Tillbaka-knapp
+        back_button = tk.Button(self, text="←", font=("Arial", 16), bg="#ff4d4d", fg="white",
+                                activebackground="#e63939",
+                                command=lambda: controller.show_page("StartPage"))
+        back_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+
         # Huvudram i mitten
-        center_frame = tk.Frame(self, bg="#ffffff", bd=2, relief="ridge")
-        center_frame.grid(row=1, column=1, padx=20, pady=20, sticky="nsew")
+        center_frame = tk.Frame(self, bg="#ffffff", bd=2, relief="ridge", width=1200, height=600)
+        center_frame.grid(row=1, column=1, padx=40, pady=20, sticky="nsew")
+        center_frame.grid_columnconfigure(0, weight=1)
+
+        # Stoppa automatisk anpassning
+        center_frame.grid_propagate(False)
 
         # Titel
         title = tk.Label(center_frame, text="Parkens Information", font=("Arial", 26, "bold"),
                          bg="#ffffff", fg="#b30000")
         title.grid(row=0, column=0, pady=10, padx=10, sticky="n")
 
-        # Canvas och scrollbar för innehållet
-        canvas = tk.Canvas(center_frame, bg="#ffe6e6", highlightthickness=0)
+        # Canvas och scrollbar
+        canvas = tk.Canvas(center_frame, bg="#ffe6e6", highlightthickness=0, width= 500)
         scrollbar = ttk.Scrollbar(center_frame, orient="vertical", command=canvas.yview)
         scrollable_frame = tk.Frame(canvas, bg="#ffe6e6")
 
@@ -369,49 +439,59 @@ class ZooInfoPage(tk.Frame):
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="n")
+        # Centrera scrollable_frame
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="n", width=780)
         canvas.grid(row=1, column=0, sticky="nsew")
         scrollbar.grid(row=1, column=1, sticky="ns")
 
-        # Öppettider och biljettpriser
-        info_frame = tk.Frame(scrollable_frame, bg="#ffcccc", bd=2, relief="ridge")
-        info_frame.pack(pady=10, padx=10, fill="x")
+        # Grid layout för centrering
+        scrollable_frame.grid_columnconfigure(0, weight=1)
+        scrollable_frame.grid_columnconfigure(2, weight=1)
 
-        tk.Label(info_frame, text="Öppettider: 09:00 - 18:00.", font=("Arial", 14),
-                 bg="#ffcccc", fg="#b30000").pack(pady=5)
-        tk.Label(info_frame, text="Biljettpris: 150.0 SEK.", font=("Arial", 14),
-                 bg="#ffcccc", fg="#b30000").pack(pady=5)
-
-        # Tillval
-        tk.Label(info_frame, text="Tillval:", font=("Arial", 14, "bold"), bg="#ffcccc", fg="#b30000").pack(pady=5)
-        for addon in self.zoo.show_addon_prices().split("\n"):
-            tk.Label(info_frame, text=addon, font=("Arial", 12), bg="#ffcccc", fg="#333333").pack()
-
-        # Djur-information
+        # Titel
         tk.Label(scrollable_frame, text="Djur i parken:", font=("Arial", 18, "bold", "underline"),
-                 bg="#ffe6e6", fg="#b30000").pack(pady=10)
+                 bg="#ffe6e6", fg="#b30000").grid(row=0, column=1, pady=10)
 
+        # Djur-information centreras i kolumn 1
+        row_index = 1
         for animal in self.zoo.list_animals():
-            animal_frame = tk.Frame(scrollable_frame, bg="#ffffff", bd=2, relief="solid")
-            animal_frame.pack(pady=5, padx=10, fill="x")
+            frame = tk.Frame(scrollable_frame, bg="#f9f9f9", bd=2, relief="ridge")
+            frame.grid(row=row_index, column=1, pady=10, padx=20, sticky="ew")
+            row_index += 1
 
-            # Djurbild
             try:
-                img = Image.open(animal.image_path).resize((80, 80), Image.Resampling.LANCZOS)
+                img = Image.open(animal.image_path).resize((200, 130), Image.Resampling.LANCZOS)
                 photo = ImageTk.PhotoImage(img)
-                img_label = tk.Label(animal_frame, image=photo, bg="#ffffff")
-                img_label.image = photo  # Håll referens
-                img_label.pack(side="right", padx=10, pady=10)
+                img_label = tk.Label(frame, image=photo, bg="#f9f9f9")
+                img_label.image = photo
+                img_label.pack(side="left", padx=10, pady=10)
             except Exception:
-                tk.Label(animal_frame, text="[Bild saknas]", bg="#ffffff", font=("Arial", 12, "italic")).pack(side="right", padx=10)
+                tk.Label(frame, text="[Bild saknas]", bg="#f9f9f9", font=("Arial", 12, "italic")).pack(side="left",
+                                                                                                       padx=10)
 
-            # Djurets info
-            details = (f"Art: {animal.get_species()}\n"
-                       f"Namn: {animal.name}\n"
-                       f"Ålder: {animal.age} år\n"
-                       f"Favoritmat: {animal.favorite_food}")
-            tk.Label(animal_frame, text=details, font=("Arial", 12), bg="#ffffff", fg="#333333",
-                     justify="left").pack(side="left", padx=10, pady=10)
+            age_text = f"Ålder: {animal.get_age_in_month()} månader" if isinstance(animal,
+                                                                                   LionCub) else f"Ålder: {animal.age} år"
+            info_text = (f"Art: {animal.get_species()}\n"
+                         f"Namn: {animal.name}\n"
+                         f"{age_text}\n"
+                         )
+            tk.Label(frame, text=info_text, font=("Arial", 12), bg="#f9f9f9", fg="#333333",
+                     justify="left", anchor="w").pack(side="left", padx=10)
+
+        # Sektion för öppettider, biljettkostnad och tillval
+        info_section = tk.Frame(center_frame, bg="#ffe6e6", bd=2, relief="ridge")
+        info_section.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
+
+        tk.Label(info_section, text="Parkens Öppettider:", font=("Arial", 16, "bold"), bg="#ffe6e6", fg="#b30000").pack(pady=5)
+        tk.Label(info_section, text=f"{self.zoo.show_opening_hours()}", font=("Arial", 12), bg="#ffe6e6").pack(pady=2)
+
+        tk.Label(info_section, text="Biljettkostnad:", font=("Arial", 16, "bold"), bg="#ffe6e6", fg="#b30000").pack(pady=5)
+        tk.Label(info_section, text=f"{self.zoo.show_ticket_price()}", font=("Arial", 12), bg="#ffe6e6").pack(pady=2)
+
+        tk.Label(info_section, text="Tillval:", font=("Arial", 16, "bold"), bg="#ffe6e6", fg="#b30000").pack(pady=5)
+        addon_prices = self.zoo.show_addon_prices()
+        for line in addon_prices.split("\n"):
+            tk.Label(info_section, text=line, font=("Arial", 12), bg="#ffe6e6").pack(pady=2)
 
         # Sidfot
         footer = tk.Label(self, text="Sidfot med info", bg="#ff4d4d", fg="white", font=("Arial", 12))
@@ -420,11 +500,10 @@ class ZooInfoPage(tk.Frame):
 
 
 
-# Sida för att utforska djurparken
 class ExploreParkPage(tk.Frame):
     def __init__(self, parent, controller, zoo):
         """Initialiserar sidan för att utforska djurparken."""
-        super().__init__(parent, bg="#ffffff")  # Vit bakgrund
+        super().__init__(parent, bg="#ffffff")
         self.controller = controller
         self.zoo = zoo
         self.visitor = None  # För att hålla aktuell besökare
@@ -441,61 +520,61 @@ class ExploreParkPage(tk.Frame):
         self.title_label.pack(pady=20)
 
         # Knapp-container
-        button_frame = tk.Frame(self, bg="#ffffff")
-        button_frame.pack(pady=30)
+        self.button_frame = tk.Frame(self, bg="#ffffff")
+        self.button_frame.pack(pady=30)
 
         # Knappar
-        buttons = [
-            ("Sök efter ett djur", lambda: controller.show_page("SearchAnimalPage")),
-            ("Interagera med ett djur (kräver tillval)", lambda: controller.show_page("InteractAnimalPage")),
-            ("Mata ett djur (kräver tillval)", lambda: controller.show_page("FeedAnimalPage")),
-            ("Visa detaljerad information om djur", lambda: controller.show_page("DetailedAnimalPage"))
-        ]
+        self.search_button = tk.Button(self.button_frame, text="Sök efter ett djur",
+                                       font=("Arial", 14, "bold"), bg="#ff4d4d", fg="white",
+                                       command=lambda: controller.show_page("SearchAnimalPage"))
+        self.interact_button = tk.Button(self.button_frame, text="Interagera med ett djur (kräver tillval)",
+                                         font=("Arial", 14, "bold"), bg="#ff4d4d", fg="white",
+                                         command=self.go_to_interact_page)
+        self.feed_button = tk.Button(self.button_frame, text="Mata ett djur (kräver tillval)",
+                                     font=("Arial", 14, "bold"), bg="#ff4d4d", fg="white",
+                                     command=self.go_to_feed_page)
+        self.details_button = tk.Button(self.button_frame, text="Visa detaljerad information om djur",
+                                        font=("Arial", 14, "bold"), bg="#ff4d4d", fg="white",
+                                        command=self.go_to_detailed_page)
 
-        for text, command in buttons:
-            btn = tk.Button(button_frame, text=text, font=("Arial", 14, "bold"), bg="#ff4d4d",
-                            fg="white", activebackground="#e63939", activeforeground="white",
-                            bd=2, relief="raised", width=30, height=2, command=command)
+        # Packa knappar
+        for btn in [self.search_button, self.interact_button, self.feed_button, self.details_button]:
             btn.pack(pady=10)
 
     def set_visitor(self, visitor):
-        """Uppdaterar sidan med besökarens namn."""
+        """Uppdaterar sidan med besökarens namn och tillgänglighet för knappar."""
         self.visitor = visitor
         self.title_label.config(text=f"Utforska djurparken - {visitor.name}")
+        self.update_button_states()
 
-    def show_animal_info(self):
-        """Visar detaljerad information om djuren."""
-        animal_info = "\n".join([str(animal) for animal in self.zoo.list_animals()])  # Använd list_animals()
-        messagebox.showinfo("Djurinformation", animal_info)
-
-    def search_animals(self):
-        """Söker efter djur baserat på namn."""
-        search = simpledialog.askstring("Sök djur", "Ange namnet på djuret:")
-        if not search:
+    def update_button_states(self):
+        """Aktiverar/inaktiverar knappar baserat på besökarens tillval."""
+        if not self.visitor:
             return
+        cart = [item[0] for item in self.visitor.cart]
+        self.interact_button.config(state=tk.NORMAL if "Interagera med djur" in cart else tk.DISABLED)
+        self.feed_button.config(state=tk.NORMAL if "Mata djur" in cart else tk.DISABLED)
 
-        for animal in self.zoo.list_animals():  # Använd list_animals()
-            if animal.name.lower() == search.lower():
-                messagebox.showinfo("Hittat djur", f"Art: {animal.get_species()}\n"
-                                                   f"Namn: {animal.name}\n"
-                                                   f"Ålder: {animal.age} år\n"
-                                                   f"Favoritmat: {animal.favorite_food}")
-                return
-        messagebox.showerror("Fel", "Inget djur hittades.")
-
-    def interact_with_animal(self):
-        """Simulerar interaktion med ett djur."""
-        if not self.visitor or "Interagera med djur" not in [item[0] for item in self.visitor.cart]:
+    def go_to_interact_page(self):
+        """Navigerar till sidan för att interagera med djur."""
+        if "Interagera med djur" in [item[0] for item in self.visitor.cart]:
+            self.controller.show_page("InteractAnimalPage")
+        else:
             messagebox.showwarning("Tillval saknas", "Du har inte köpt tillvalet för att interagera med djur.")
-            return
-        messagebox.showinfo("Interaktion", "Du har interagerat med ett djur!")
 
-    def feed_animal(self):
-        """Simulerar att mata ett djur."""
-        if not self.visitor or "Mata djur" not in [item[0] for item in self.visitor.cart]:
+    def go_to_feed_page(self):
+        """Navigerar till sidan för att mata djur."""
+        if "Mata djur" in [item[0] for item in self.visitor.cart]:
+            self.controller.show_page("FeedAnimalPage")
+        else:
             messagebox.showwarning("Tillval saknas", "Du har inte köpt tillvalet för att mata djur.")
-            return
-        messagebox.showinfo("Matning", "Du har matat ett djur!")
+
+    def go_to_detailed_page(self):
+        """Navigerar till sidan med detaljerad information om djur."""
+        self.controller.show_page("DetailedAnimalPage")
+
+
+
 
 
 class SelectVisitorPage(tk.Frame):
@@ -528,7 +607,9 @@ class SelectVisitorPage(tk.Frame):
 
         for visitor in self.zoo._visitors:  # Direkt åtkomst till besökarlistan
             name = visitor.name
-            addons = ", ".join(visitor.cart) if visitor.cart else "Inga tillval"
+            addons = ", ".join(item[0] for item in visitor.cart) if visitor.cart else "Inga tillval"
+
+
 
             # Skapa en stor knapp med röd bakgrund och vit text
             button_text = f"{name}\nTillval: {addons}"
@@ -577,8 +658,10 @@ class DetailedAnimalPage(tk.Frame):
         self.animal_frame = tk.Frame(self, bg="#ffffff")
         self.animal_frame.pack(fill="both", expand=True, padx=20, pady=10)
 
+        self.display_animals() #Anropar metoden.
+
     def display_animals(self):
-        """Visar alla djur i detaljerad vy."""
+        """Visar alla djur i detaljerad vy med större bilder och vänsterställd information."""
         # Rensa tidigare widgets
         for widget in self.animal_frame.winfo_children():
             widget.destroy()
@@ -587,34 +670,41 @@ class DetailedAnimalPage(tk.Frame):
         for animal in self.zoo.list_animals():  # Säker åtkomst till __animals
             # Ram för varje djur
             frame = tk.Frame(self.animal_frame, bg="#f9f9f9", bd=2, relief="ridge")
-            frame.pack(pady=10, fill="x")
+            frame.pack(pady=15, padx=10, fill="x")
 
-            # Försök ladda bilden
+            # Huvudram med horisontell layout
+            content_frame = tk.Frame(frame, bg="#f9f9f9")
+            content_frame.pack(fill="both", expand=True, padx=20, pady=15)
+
+            # Ladda och visa en större bild
             try:
-                img = Image.open(animal.image_path).resize((80, 80), Image.Resampling.LANCZOS)
+                img = Image.open(animal.image_path).resize((150, 150), Image.Resampling.LANCZOS)
                 photo = ImageTk.PhotoImage(img)
-                img_label = tk.Label(frame, image=photo, bg="#f9f9f9")
+                img_label = tk.Label(content_frame, image=photo, bg="#f9f9f9")
                 img_label.image = photo  # Håll referensen
-                img_label.pack(side="left", padx=10, pady=10)
+                img_label.pack(side="left", padx=10)
             except Exception:
-                tk.Label(frame, text="[Bild saknas]", bg="#f9f9f9", font=("Arial", 12, "italic")).pack(side="left",
-                                                                                                      padx=10, pady=10)
+                tk.Label(content_frame, text="[Bild saknas]", bg="#f9f9f9", font=("Arial", 14, "italic"),
+                         width=15, height=7).pack(side="left", padx=10)
 
-            # Information om djuret
+            # Vänsterställd djurinformation
+            info_frame = tk.Frame(content_frame, bg="#f9f9f9")
+            info_frame.pack(side="left", fill="both", expand=True, padx=20)
+
             info_text = (f"Art: {animal.get_species()}\n"
                          f"Namn: {animal.name}\n"
                          f"Ålder: {animal.age} år\n"
                          f"Favoritmat: {animal.favorite_food}")
-            tk.Label(frame, text=info_text, font=("Arial", 12), bg="#f9f9f9", fg="#333333",
-                     justify="left", anchor="w").pack(side="left", padx=10)
+            tk.Label(info_frame, text=info_text, font=("Arial", 14), bg="#f9f9f9", fg="#333333",
+                     justify="left", anchor="w").pack(anchor="w")
 
             # Knappar för mata och interagera
-            button_frame = tk.Frame(frame, bg="#f9f9f9")
-            button_frame.pack(side="right", padx=10, pady=10)
+            button_frame = tk.Frame(content_frame, bg="#f9f9f9")
+            button_frame.pack(side="right", padx=10)
 
-            tk.Button(button_frame, text="Mata djur", bg="#ff4d4d", fg="white", font=("Arial", 10, "bold"),
+            tk.Button(button_frame, text="Mata djur", bg="#ff4d4d", fg="white", font=("Arial", 12, "bold"),
                       command=lambda a=animal: self.feed_animal(a)).pack(pady=5)
-            tk.Button(button_frame, text="Interagera", bg="#ff4d4d", fg="white", font=("Arial", 10, "bold"),
+            tk.Button(button_frame, text="Interagera", bg="#ff4d4d", fg="white", font=("Arial", 12, "bold"),
                       command=lambda a=animal: self.interact_with_animal(a)).pack(pady=5)
 
     def feed_animal(self, animal):
@@ -701,5 +791,159 @@ class SearchAnimalPage(tk.Frame):
         # Om djuret inte hittas
         tk.Label(self.result_frame, text="Inget djur med det namnet hittades.", font=("Arial", 14, "italic"),
                  bg="#f9f9f9", fg="red").pack(pady=10)
+
+
+class InteractAnimalPage(tk.Frame):
+    def __init__(self, parent, controller, zoo):
+        """Skapar sidan för att interagera med djur."""
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        self.zoo = zoo
+
+        # Konfigurera fönstret för att centrera widgets
+        self.grid_rowconfigure(0, weight=1)  # Överst
+        self.grid_rowconfigure(4, weight=1)  # Nederst
+        self.grid_columnconfigure(0, weight=1)  # Vänster
+        self.grid_columnconfigure(2, weight=1)  # Höger
+
+        # Rubrik
+        label = tk.Label(self, text="Interagera med ett djur", font=("Arial", 18, "bold"))
+        label.grid(row=1, column=1, pady=(10, 20), sticky="n")
+
+        # Input för djurnamn
+        self.animal_name_var = tk.StringVar()
+        animal_label = tk.Label(self, text="Ange djurets namn:")
+        animal_label.grid(row=2, column=0, padx=10, pady=5, sticky="e")
+        animal_entry = tk.Entry(self, textvariable=self.animal_name_var)
+        animal_entry.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+        # Bekräfta-knapp
+        interact_button = tk.Button(self, text="Interagera", command=self.interact_with_animal)
+        interact_button.grid(row=3, column=1, pady=10)
+
+        # Feedback-meddelande
+        self.feedback_label = tk.Label(self, text="", fg="green")
+        self.feedback_label.grid(row=4, column=1, pady=10)
+
+        # Tillbaka-knapp (placerad i övre vänstra hörnet)
+        back_button = tk.Button(self, text="←", font=("Arial", 16), bg="#ff4d4d", fg="white",
+                                activebackground="#e63939",
+                                command=lambda: controller.show_page("ExploreParkPage"))
+        back_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+
+    def interact_with_animal(self):
+        """Interagerar med djuret."""
+        animal_name = self.animal_name_var.get()
+        animals = self.zoo.list_animals()
+        animal = next((a for a in animals if a.name == animal_name), None)
+
+        if animal:
+            result = animal.interact()
+            self.feedback_label.config(text=result, fg="green")
+        else:
+            self.feedback_label.config(text="Djuret finns inte i zoo.", fg="red")
+
+
+import tkinter as tk
+from tkinter import ttk
+
+class FeedAnimalPage(tk.Frame):
+    def __init__(self, parent, controller, zoo):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        self.zoo = zoo
+        self.animal = None
+
+        # Grundkonfiguration av layout
+        self.config(bg="#f0f8ff")
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(5, weight=1)
+
+        # Header
+        self.create_header()
+
+        # Sökningssektion
+        self.create_search_section()
+
+        # Djurets detaljer
+        self.create_animal_info_section()
+
+        # Mata-sektion
+        self.create_feed_section()
+
+        # Footer
+        self.create_footer()
+
+    def create_header(self):
+        """Header-sektionen."""
+        header = tk.Label(self, text="Mata ett djur", font=("Arial", 24, "bold"), bg="#f0f8ff", fg="#333")
+        header.grid(row=0, column=1, pady=(10, 20), sticky="n")
+
+    def create_search_section(self):
+        """Sökningssektionen."""
+        search_label = tk.Label(self, text="Ange djurets namn:", font=("Arial", 12), bg="#f0f8ff")
+        search_label.grid(row=1, column=0, sticky="e", padx=10)
+
+        self.animal_name_var = tk.StringVar()
+        self.animal_entry = tk.Entry(self, textvariable=self.animal_name_var, width=20)
+        self.animal_entry.grid(row=1, column=1, sticky="w", padx=10)
+
+        self.search_button = ttk.Button(self, text="Sök", command=self.search_animal)
+        self.search_button.grid(row=1, column=2, padx=10)
+
+    def create_animal_info_section(self):
+        """Visar djurets detaljer."""
+        self.animal_info_frame = tk.Frame(self, bg="#e6f7ff", bd=2, relief="ridge")
+        self.animal_info_frame.grid(row=2, column=0, columnspan=3, padx=20, pady=10, sticky="nsew")
+
+        self.animal_info_label = tk.Label(self.animal_info_frame, text="Inget djur valt", font=("Arial", 12), bg="#e6f7ff", justify="left")
+        self.animal_info_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+
+    def create_feed_section(self):
+        """Input för mat och mata-knapp."""
+        tk.Label(self, text="Ange maten:", font=("Arial", 12), bg="#f0f8ff").grid(row=3, column=0, sticky="e", padx=10)
+
+        self.food_var = tk.StringVar()
+        self.food_entry = tk.Entry(self, textvariable=self.food_var, width=20)
+        self.food_entry.grid(row=3, column=1, sticky="w", padx=10)
+
+        self.feed_button = ttk.Button(self, text="Mata", command=self.feed_animal)
+        self.feed_button.grid(row=3, column=2, padx=10)
+        self.feed_button.config(state="disabled")
+
+    def create_footer(self):
+        """Footer med tillbaka-knapp och feedback."""
+        self.feedback_label = tk.Label(self, text="", fg="green", bg="#f0f8ff", font=("Arial", 10))
+        self.feedback_label.grid(row=4, column=0, columnspan=3, pady=10)
+
+        back_button = ttk.Button(self, text="← Tillbaka", command=lambda: self.controller.show_page("ExploreParkPage"))
+        back_button.grid(row=5, column=0, columnspan=3, pady=10)
+
+    def search_animal(self):
+        """Söker efter djuret och uppdaterar information."""
+        animal_name = self.animal_name_var.get().strip()
+        animals = self.zoo.list_animals()
+        self.animal = next((a for a in animals if a.name.lower() == animal_name.lower()), None)
+
+        if self.animal:
+            self.animal_info_label.config(
+                text=f"Namn: {self.animal.name}\nArt: {type(self.animal).__name__}\nHungerstatus: {'Hungrig' if self.animal.hungry else 'Mätt'}\nFavoritmat: {self.animal.favorite_food}"
+            )
+            self.feed_button.config(state="normal")
+        else:
+            self.animal_info_label.config(text="Djuret hittades inte.")
+            self.feed_button.config(state="disabled")
+
+    def feed_animal(self):
+        """Hantera matning av djuret."""
+        food_item = self.food_var.get().strip()
+        if self.animal:
+            result = self.animal.eat(food_item)
+            self.feedback_label.config(text=result, fg="green")
+            self.search_animal()  # Uppdatera hungerstatus
+        else:
+            self.feedback_label.config(text="Sök efter ett djur först.", fg="red")
 
 

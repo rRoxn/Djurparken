@@ -3,7 +3,7 @@ from animals.animal import Animal
 class Elephant(Animal):
     def __init__(self, name: str, age: int, image_path: str):
         """Initierar en elefant."""
-        super().__init__(name, age, "jordnötter", image_path)
+        super().__init__(name, age, "Jordnötter", image_path)
 
     def interact(self) -> str:
         """Interaktion för elefant."""
