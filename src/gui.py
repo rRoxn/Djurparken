@@ -71,7 +71,7 @@ class StartPage(tk.Frame):
         self.grid_columnconfigure(2, weight=1)
 
         # Huvudinnehåll i mitten
-        content_frame = tk.Frame(self, bg="lightblue")
+        content_frame = tk.Frame(self, bg="#D6BD98")
         content_frame.grid(row=1, column=1, sticky="nsew", padx=20, pady=20)
 
         # Titel för startsidan
@@ -95,7 +95,7 @@ class StartPage(tk.Frame):
             print(f"Fel: {e}")
 
         # Menyram för knappar
-        menu_frame = tk.Frame(content_frame, bg="lightgray", relief="groove", bd=5, padx=10, pady=10)
+        menu_frame = tk.Frame(content_frame, bg="#677D6A", relief="groove", bd=5, padx=10, pady=10)
         menu_frame.pack(pady=20)
 
         # Knappar i grid-layout med 2 knappar per rad
@@ -113,13 +113,66 @@ class StartPage(tk.Frame):
             else:
                 cmd = lambda p=page: controller.show_page(p)
             row, col = divmod(idx, 2)  # Dela upp i rader och kolumner
-            tk.Button(menu_frame, text=text, font=("Arial", 14, "bold"), bg="red", fg="white", width=20, height=2,
-                      command=cmd).grid(row=row, column=col, padx=10, pady=10)
+            tk.Button(menu_frame, 
+                      text=text, 
+                      font=("Arial", 14, "bold"), 
+                      bg="#D6BD98", fg="#000000", width=20, 
+                      height=2,
+                      command=cmd
+                      ).grid(row=row, column=col, padx=10, pady=10)
 
         # Sidfot med info
         footer_label = tk.Label(self, text="Sidfot med info", bg="lightgray", font=("Arial", 12))
         footer_label.grid(row=2, column=0, columnspan=3, sticky="ew")
 
+
+class ZooInfoPage(tk.Frame):
+    def __init__(self, parent, controller, zoo):
+        super().__init__(parent, bg="#1A3636")
+        self.controller = controller
+        self.zoo = zoo
+
+        # Layout för huvudfönster
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+
+
+
+        # Huvudram
+        center_frame = tk.Frame(self, bg="#ffffff", bd=2, relief="ridge")
+        center_frame.grid(row=1, column=1, padx=40, pady=20, sticky="nsew")
+
+        # Tillbaka-knapp
+        back_button = tk.Button(self, text="←", font=("Arial", 16), bg="#ff4d4d", fg="white",
+                                command=lambda: controller.show_page("StartPage"))
+        back_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+
+        # Parkens Information
+        info_section = tk.Frame(center_frame, bg="#ffe6e6", bd=2, relief="ridge")
+        info_section.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+        tk.Label(info_section, text="Parkens Information", font=("Arial", 18, "bold"),
+                 bg="#ffe6e6", fg="#b30000").grid(row=0, column=0, pady=5, sticky="w")
+        tk.Label(info_section, text=f"Öppettider: {self.zoo.show_opening_hours()}",
+                 bg="#ffe6e6", font=("Arial", 12)).grid(row=1, column=0, sticky="w")
+        tk.Label(info_section, text=f"Biljettkostnad: {self.zoo.show_ticket_price()}",
+                 bg="#ffe6e6", font=("Arial", 12)).grid(row=2, column=0, sticky="w")
+
+        # Djurlista
+        tk.Label(center_frame, text="Djur i parken:", font=("Arial", 16, "bold", "underline"),
+                 bg="#ffffff", fg="#b30000").grid(row=1, column=0, pady=10, sticky="w")
+
+        for index, animal in enumerate(self.zoo.list_animals()):
+            frame = tk.Frame(center_frame, bg="#f9f9f9", bd=2, relief="ridge")
+            frame.grid(row=index + 2, column=0, padx=10, pady=5, sticky="nsew")
+            tk.Label(frame, text=f"Namn: {animal.name}, Art: {animal.get_species()}",
+                     bg="#f9f9f9", font=("Arial", 12)).grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+        # Sidfot
+        footer = tk.Label(self, text="Sidfot med info", bg="#ff4d4d", fg="white", font=("Arial", 12))
+        footer.grid(row=2, column=1,)
 
 
 
@@ -127,52 +180,54 @@ class StartPage(tk.Frame):
 class RegisterVisitorPage(tk.Frame):
     def __init__(self, parent, controller, zoo):
         """Initialiserar sidan för att registrera en ny besökare."""
-        super().__init__(parent, bg="#ffffff")  # Vit bakgrundsfärg
+        super().__init__(parent, bg="#1A3636")  # Bakgrundsfärg
         self.controller = controller
         self.zoo = zoo
 
-        # Tillbaka-knapp
-        back_button = tk.Button(self, text="←", font=("Arial", 16), bg="#ff4d4d", fg="white",
-                                activebackground="#e63939", command=lambda: controller.show_page("StartPage"))
-        back_button.place(x=10, y=10)
+       
+
+        # Ram som täcker 40% av fönstret
+        center_frame = tk.Frame(self, bg="#f9f9f9", bd=2, relief="ridge")
+        center_frame.place(relx=0.3, rely=0.2, relwidth=0.4, relheight=0.6)
 
         # Titel
-        title_label = tk.Label(self, text="Registrera ny besökare", font=("Arial", 26, "bold"),
-                               bg="#ffffff", fg="#b30000")
-        title_label.pack(pady=20)
+        title_label = tk.Label(center_frame, text="Registrera ny besökare", font=("Arial", 26, "bold"),
+                               bg="#f9f9f9", fg="#b30000")
+        title_label.pack(pady=10)
 
         # Ram för inmatningsfält
-        input_frame = tk.Frame(self, bg="#f9f9f9", bd=2, relief="ridge")  # Ljusgrå bakgrund
-        input_frame.pack(pady=20, padx=20)
+        input_frame = tk.Frame(center_frame, bg="#f9f9f9")
+        input_frame.pack(pady=20)
 
         # Namn-input
         tk.Label(input_frame, text="Ange namn:", font=("Arial", 12, "bold"), bg="#f9f9f9", fg="#333333").grid(
             row=0, column=0, pady=10, padx=10)
-        self.name_entry = tk.Entry(input_frame, font=("Arial", 12), bg="#ffffff", fg="#333333",
-                                   bd=2, relief="solid", insertbackground="#333333")
+        self.name_entry = tk.Entry(input_frame, font=("Arial", 12), bg="#ffffff", fg="#333333", bd=2)
         self.name_entry.grid(row=0, column=1, pady=10, padx=10)
 
         # Budget-input
         tk.Label(input_frame, text="Ange budget:", font=("Arial", 12, "bold"), bg="#f9f9f9", fg="#333333").grid(
             row=1, column=0, pady=10, padx=10)
-        self.budget_entry = tk.Entry(input_frame, font=("Arial", 12), bg="#ffffff", fg="#333333",
-                                     bd=2, relief="solid", insertbackground="#333333")
+        self.budget_entry = tk.Entry(input_frame, font=("Arial", 12), bg="#ffffff", fg="#333333", bd=2)
         self.budget_entry.grid(row=1, column=1, pady=10, padx=10)
 
         # Registrera-knapp
-        register_button = tk.Button(self, text="Registrera", font=("Arial", 14, "bold"), bg="#ff4d4d",
-                                    fg="white", activebackground="#e63939", activeforeground="white",
-                                    bd=2, relief="raised", command=self.register_visitor)
-        register_button.pack(pady=20)
+        register_button = tk.Button(center_frame, text="Registrera", font=("Arial", 14, "bold"), bg="#ff4d4d",
+                                    fg="white", command=self.register_visitor)
+        register_button.pack(pady=10)
 
-        # Meddelanderuta för att visa feedback
-        self.message_label = tk.Label(self, text="", font=("Arial", 14), bg="#ffffff", fg="green")
+        # Meddelanderuta
+        self.message_label = tk.Label(center_frame, text="", font=("Arial", 12), bg="#f9f9f9", fg="green")
         self.message_label.pack(pady=10)
 
         # Informationsetikett för biljettkostnad
-        ticket_info_label = tk.Label(self, text="En biljett till djurparken kostar 150 SEK och dras från din budget.",
-                                     font=("Arial", 12), bg="#ffffff", fg="#b30000")
-        ticket_info_label.pack(pady=(5, 0))  # Liten padding ovanför
+        ticket_info_label = tk.Label(center_frame, text="En biljett till djurparken kostar 150 SEK och dras från din budget.",
+                                     font=("Arial", 12), bg="#f9f9f9", fg="#b30000", wraplength=300)
+        ticket_info_label.pack(pady=5)
+        # Tillbaka-knapp 
+        back_button = tk.Button(center_frame, text="←", font=("Arial", 16), bg="#ff4d4d", fg="white",
+                                activebackground="#e63939", command=lambda: controller.show_page("StartPage"))
+        back_button.place(x=10, y=10)
 
     def register_visitor(self):
         """Registrerar en ny besökare och visar bekräftelse."""
@@ -398,104 +453,6 @@ class AddAddonsPage(tk.Frame):
         self.after(2000, lambda: self.controller.show_page("StartPage"))
 
 
-class ZooInfoPage(tk.Frame):
-    def __init__(self, parent, controller, zoo):
-        super().__init__(parent, bg="#ffe6e6")
-        self.controller = controller
-        self.zoo = zoo
-
-        # Centrera huvudlayout
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_rowconfigure(2, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(2, weight=1)
-
-        # Tillbaka-knapp
-        back_button = tk.Button(self, text="←", font=("Arial", 16), bg="#ff4d4d", fg="white",
-                                activebackground="#e63939",
-                                command=lambda: controller.show_page("StartPage"))
-        back_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
-
-        # Huvudram i mitten
-        center_frame = tk.Frame(self, bg="#ffffff", bd=2, relief="ridge", width=1200, height=600)
-        center_frame.grid(row=1, column=1, padx=40, pady=20, sticky="nsew")
-        center_frame.grid_columnconfigure(0, weight=1)
-
-        # Stoppa automatisk anpassning
-        center_frame.grid_propagate(False)
-
-        # Titel
-        title = tk.Label(center_frame, text="Parkens Information", font=("Arial", 26, "bold"),
-                         bg="#ffffff", fg="#b30000")
-        title.grid(row=0, column=0, pady=10, padx=10, sticky="n")
-
-        # Canvas och scrollbar
-        canvas = tk.Canvas(center_frame, bg="#ffe6e6", highlightthickness=0, width= 500)
-        scrollbar = ttk.Scrollbar(center_frame, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas, bg="#ffe6e6")
-
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-        )
-
-        # Centrera scrollable_frame
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="n", width=780)
-        canvas.grid(row=1, column=0, sticky="nsew")
-        scrollbar.grid(row=1, column=1, sticky="ns")
-
-        # Grid layout för centrering
-        scrollable_frame.grid_columnconfigure(0, weight=1)
-        scrollable_frame.grid_columnconfigure(2, weight=1)
-
-        # Titel
-        tk.Label(scrollable_frame, text="Djur i parken:", font=("Arial", 18, "bold", "underline"),
-                 bg="#ffe6e6", fg="#b30000").grid(row=0, column=1, pady=10)
-
-        # Djur-information centreras i kolumn 1
-        row_index = 1
-        for animal in self.zoo.list_animals():
-            frame = tk.Frame(scrollable_frame, bg="#f9f9f9", bd=2, relief="ridge")
-            frame.grid(row=row_index, column=1, pady=10, padx=20, sticky="ew")
-            row_index += 1
-
-            try:
-                img = Image.open(animal.image_path).resize((200, 130), Image.Resampling.LANCZOS)
-                photo = ImageTk.PhotoImage(img)
-                img_label = tk.Label(frame, image=photo, bg="#f9f9f9")
-                img_label.image = photo
-                img_label.pack(side="left", padx=10, pady=10)
-            except Exception:
-                tk.Label(frame, text="[Bild saknas]", bg="#f9f9f9", font=("Arial", 12, "italic")).pack(side="left",
-                                                                                                       padx=10)
-
-            age_text = f"Ålder: {animal.get_age_in_month()} månader" if isinstance(animal,
-                                                                                   LionCub) else f"Ålder: {animal.age} år"
-            info_text = (f"Art: {animal.get_species()}\n"
-                         f"Namn: {animal.name}\n"
-                         f"{age_text}\n"
-                         )
-            tk.Label(frame, text=info_text, font=("Arial", 12), bg="#f9f9f9", fg="#333333",
-                     justify="left", anchor="w").pack(side="left", padx=10)
-
-        # Sektion för öppettider, biljettkostnad och tillval
-        info_section = tk.Frame(center_frame, bg="#ffe6e6", bd=2, relief="ridge")
-        info_section.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
-
-        tk.Label(info_section, text="Parkens Öppettider:", font=("Arial", 16, "bold"), bg="#ffe6e6", fg="#b30000").pack(pady=5)
-        tk.Label(info_section, text=f"{self.zoo.show_opening_hours()}", font=("Arial", 12), bg="#ffe6e6").pack(pady=2)
-
-        tk.Label(info_section, text="Biljettkostnad:", font=("Arial", 16, "bold"), bg="#ffe6e6", fg="#b30000").pack(pady=5)
-        tk.Label(info_section, text=f"{self.zoo.show_ticket_price()}", font=("Arial", 12), bg="#ffe6e6").pack(pady=2)
-
-        tk.Label(info_section, text="Tillval:", font=("Arial", 16, "bold"), bg="#ffe6e6", fg="#b30000").pack(pady=5)
-        addon_prices = self.zoo.show_addon_prices()
-        for line in addon_prices.split("\n"):
-            tk.Label(info_section, text=line, font=("Arial", 12), bg="#ffe6e6").pack(pady=2)
-
-        # Sidfot
-        footer = tk.Label(self, text="Sidfot med info", bg="#ff4d4d", fg="white", font=("Arial", 12))
-        footer.grid(row=3, column=1, sticky="ew")
 
 
 
