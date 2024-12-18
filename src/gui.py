@@ -132,18 +132,17 @@ class ZooInfoPage(tk.Frame):
         self.controller = controller
         self.zoo = zoo
 
-        # Layout för huvudfönster
+        # Gör sidan expanderbar
         self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
 
-
-
-        # Huvudram
-        center_frame = tk.Frame(self, bg="#ffffff", bd=2, relief="ridge")
-        center_frame.grid(row=1, column=1, padx=40, pady=20, sticky="nsew")
-
+        # Huvudinnehåll i mitten
+        center_frame = tk.Frame(self, bg="#D6BD98")
+        center_frame.grid(row=1, column=1, sticky="nsew", padx=20, pady=20)
         # Tillbaka-knapp
         back_button = tk.Button(self, text="←", font=("Arial", 16), bg="#ff4d4d", fg="white",
                                 command=lambda: controller.show_page("StartPage"))
@@ -161,14 +160,26 @@ class ZooInfoPage(tk.Frame):
                  bg="#ffe6e6", font=("Arial", 12)).grid(row=2, column=0, sticky="w")
 
         # Djurlista
-        tk.Label(center_frame, text="Djur i parken:", font=("Arial", 16, "bold", "underline"),
-                 bg="#ffffff", fg="#b30000").grid(row=1, column=0, pady=10, sticky="w")
+
+        # Gör center_frame flexibelt
+        center_frame.grid_rowconfigure(0, weight=1)  # Parkens Information
+        center_frame.grid_columnconfigure(0, weight=1)
+
+        # Dynamisk storlek för djurlistan
+        for i in range(len(self.zoo.list_animals()) + 2):  # Anpassa efter antal djur
+            center_frame.grid_rowconfigure(i + 2, weight=1)
+            tk.Label(center_frame, text="Djur i parken:", font=("Arial", 16, "bold", "underline"),
+                    bg="#ffffff", fg="#b30000").grid(row=1, column=0, pady=10, sticky="w")
 
         for index, animal in enumerate(self.zoo.list_animals()):
-            frame = tk.Frame(center_frame, bg="#f9f9f9", bd=2, relief="ridge")
-            frame.grid(row=index + 2, column=0, padx=10, pady=5, sticky="nsew")
+            frame = tk.Frame(center_frame, bg="#f9f9f9", bd=4, relief="ridge")
+            frame.grid(row=index + 2, column=0, padx=20, pady=20, sticky="nsew")
             tk.Label(frame, text=f"Namn: {animal.name}, Art: {animal.get_species()}",
                      bg="#f9f9f9", font=("Arial", 12)).grid(row=0, column=0, sticky="w", padx=10, pady=5)
+
+            tk.Label(frame, text=f"Namn: {animal.name}, Art: {animal.get_species()}",
+            bg="#f9f9f9", font=("Arial", 14)).grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
 
         # Sidfot
         footer = tk.Label(self, text="Sidfot med info", bg="#ff4d4d", fg="white", font=("Arial", 12))
