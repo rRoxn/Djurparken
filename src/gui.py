@@ -1,3 +1,4 @@
+import os
 from PIL import Image, ImageTk  # Pillow-biblioteket för att hantera bilder
 import tkinter as tk
 from tkinter import messagebox, simpledialog, ttk
@@ -7,6 +8,30 @@ from animals.lion import Lion
 from animals.lioncub import LionCub
 from animals.giraffe import Giraffe
 from animals.elephant import Elephant
+
+# Hjälpfunktion för att ladda bilder med fallback
+def load_image(image_path, size=None):
+    """
+    Laddar en bild med en fallback om sökvägen är ogiltig. Kan även resiza bilden.
+    :param image_path: Sökväg till bilden.
+    :param size: Tuple för storlek (bredd, höjd).
+    :return: En PhotoImage-bild redo för Tkinter.
+    """
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    full_path = os.path.join(base_dir, "../assets/images", image_path)
+
+    try:
+        image = Image.open(full_path)
+    except FileNotFoundError:
+        # Om bild saknas, ladda default.png
+        fallback_path = os.path.join(base_dir, "../assets/images/default.png")
+        image = Image.open(fallback_path)
+
+    # Resiza om storlek anges
+    if size:
+        image = image.resize(size, Image.Resampling.LANCZOS)
+
+    return ImageTk.PhotoImage(image)
 
 class MainApp(tk.Tk):
     def __init__(self, zoo):
@@ -89,14 +114,23 @@ class StartPage(tk.Frame):
         # Bildruta
         image_frame = tk.Frame(center_frame, bg="white", relief="ridge", bd=3)
         image_frame.grid(row=1, column=0, pady=10)
+
         try:
-            image_path = "../assets/images/bridge.jpg"  # Bildens sökväg
-            image = Image.open(image_path).resize((500, 150))  # Ändra storlek
+            # Dynamisk sökväg till bilden
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            image_path = os.path.join(base_dir, "../assets/images/bridge.jpg")
+
+            # Ladda och ändra storlek på bilden
+            image = Image.open(image_path).resize((500, 150))
             photo = ImageTk.PhotoImage(image)
+
+            # Visa bilden
             image_label = tk.Label(image_frame, image=photo, bg="white")
-            image_label.image = photo  # Håll en referens
+            image_label.image = photo  # Behåll referensen
             image_label.pack()
+
         except Exception as e:
+            # Fallback om bilden inte laddas
             tk.Label(image_frame, text="Bild kunde inte laddas", bg="lightcoral", font=("Arial", 14)).pack(expand=True)
             print(f"Fel: {e}")
 
@@ -194,13 +228,15 @@ class ZooInfoPage(tk.Frame):
             frame.grid_columnconfigure(0, weight=1)
 
             # Bild som fyller ramen
+            # Ladda bilder för djuren med fallback
+            # Ladda bilder för djuren med storlek (200x150) och fallback
             try:
-                img = Image.open(animal.image_path).resize((200, 150), Image.Resampling.LANCZOS)
-                photo = ImageTk.PhotoImage(img)
+                photo = load_image(animal.image_path, size=(200, 150))  # Resiza till 200x150
                 img_label = tk.Label(frame, image=photo, bg="#f9f9f9")
                 img_label.image = photo  # Behåll referens
                 img_label.grid(row=0, column=0, pady=5, sticky="nsew")
-            except Exception:
+            except Exception as e:
+                print(f"Fel: {e}")  # Logga felet
                 tk.Label(frame, text="[Bild saknas]", font=("Arial", 12), bg="#f9f9f9", fg="red").grid(row=0, column=0)
 
             # Text för djuret
@@ -741,22 +777,26 @@ class DetailedAnimalPage(tk.Frame):
 
     def display_animals(self):
         """Visar alla djur i en detaljerad vy."""
+        # Rensa tidigare widgets
         for widget in self.scrollable_frame.winfo_children():
-            widget.destroy()  # Rensa tidigare widgets
+            widget.destroy()
 
         for index, animal in enumerate(self.zoo.list_animals()):
             animal_frame = tk.Frame(self.scrollable_frame, bg="#ffffff", bd=4, relief="groove")
             animal_frame.pack(pady=20, padx=20, fill="x")
 
-            # Bild
-            try:
-                img = Image.open(animal.image_path).resize((200, 200), Image.Resampling.LANCZOS)
-                photo = ImageTk.PhotoImage(img)
-                tk.Label(animal_frame, image=photo, bg="#ffffff").grid(row=0, column=0, padx=20, pady=10)
-                animal_frame.image = photo  # Håll referens
-            except:
-                tk.Label(animal_frame, text="[Bild saknas]", font=("Arial", 14, "italic"),
-                         bg="#ffffff", fg="red").grid(row=0, column=0, padx=20, pady=10)
+            # Ladda bild med fallback och storleksändring
+            photo = load_image(animal.image_path, size=(200, 200))
+
+            # Visa bild
+            img_label = tk.Label(animal_frame, image=photo, bg="#ffffff")
+            img_label.grid(row=0, column=0, padx=20, pady=10)
+            img_label.image = photo  # Håll referens
+
+            # Visa information om djuret
+            tk.Label(animal_frame, text=f"Namn: {animal.name}\nArt: {animal.get_species()}",
+                     font=("Arial", 14), bg="#ffffff", fg="#333333", justify="left").grid(row=0, column=1, padx=20,
+                                                                                          pady=10, sticky="w")
 
             # Djurets detaljer
             info_text = (f"Art: {animal.get_species()}\n"
@@ -824,15 +864,18 @@ class SearchAnimalPage(tk.Frame):
                 animal_frame = tk.Frame(self.result_frame, bg="#ffffff", bd=6, relief="ridge")
                 animal_frame.pack(pady=20, padx=20, fill="both", expand=True)
 
-                # Större bild
-                try:
-                    img = Image.open(animal.image_path).resize((300, 300), Image.Resampling.LANCZOS)
-                    photo = ImageTk.PhotoImage(img)
-                    tk.Label(animal_frame, image=photo, bg="#ffffff").grid(row=0, column=0, rowspan=2, padx=20, pady=20)
-                    animal_frame.image = photo  # Håll referens
-                except:
-                    tk.Label(animal_frame, text="[Bild saknas]", font=("Arial", 18, "italic"),
-                             bg="#ffffff", fg="red").grid(row=0, column=0, rowspan=2, padx=20, pady=20)
+                # Större bild med fallback
+                photo = load_image(animal.image_path, size=(300, 300))  # Resiza till 300x300
+
+                # Visa bilden
+                img_label = tk.Label(animal_frame, image=photo, bg="#ffffff")
+                img_label.grid(row=0, column=0, rowspan=2, padx=20, pady=20)
+                img_label.image = photo  # Behåll referens
+
+                # Fallback för text om bild saknas hanteras i load_image
+                tk.Label(animal_frame, text=f"Namn: {animal.name}\nArt: {animal.get_species()}",
+                         font=("Arial", 16), bg="#ffffff", fg="#333333", justify="left").grid(row=0, column=1, padx=20,
+                                                                                              pady=10, sticky="w")
 
                 # Information i större text
                 info_text = (f"Art: {animal.get_species()}\n"
@@ -888,28 +931,30 @@ class InteractAnimalPage(tk.Frame):
         animal_name = self.search_entry.get().strip()
         self.selected_animal = next((a for a in self.zoo.list_animals() if a.name.lower() == animal_name.lower()), None)
 
-        # Clear previous results
+        # Rensa för reslutat
         for widget in self.result_frame.winfo_children():
             widget.destroy()
 
         if self.selected_animal:
-            # Display Image
-            try:
-                img = Image.open(self.selected_animal.image_path).resize((200, 200), Image.Resampling.LANCZOS)
-                photo = ImageTk.PhotoImage(img)
-                img_label = tk.Label(self.result_frame, image=photo, bg="white")
-                img_label.image = photo  # Keep reference
-                img_label.pack(side="left", padx=10)
-            except:
-                tk.Label(self.result_frame, text="[Bild saknas]", bg="white", font=("Arial", 12)).pack(side="left", padx=10)
+            # Ladda bild med fallback
+            photo = load_image(self.selected_animal.image_path, size=(200, 200))  # Resiza till 200x200
 
-            # Display Animal Info
+            # Visa bilden
+            img_label = tk.Label(self.result_frame, image=photo, bg="white")
+            img_label.image = photo  # Behåll referens
+            img_label.pack(side="left", padx=10)
+
+            # Visa djurinfo
             info_text = (f"Art: {type(self.selected_animal).__name__}\n"
                          f"Namn: {self.selected_animal.name}\n"
                          f"Ålder: {self.selected_animal.age} år\n"
                          f"Favoritmat: {self.selected_animal.favorite_food}")
-            tk.Label(self.result_frame, text=info_text, font=("Arial", 12), bg="white", anchor="w", justify="left").pack(side="left", padx=10)
+            tk.Label(self.result_frame, text=info_text, font=("Arial", 12), bg="white",
+                     anchor="w", justify="left").pack(side="left", padx=10)
+
+            # Aktivera interaktionsknapp
             self.interact_button.config(state="normal")
+
         else:
             tk.Label(self.result_frame, text="Inget djur hittades.", font=("Arial", 12, "italic"),
                      fg="red", bg="white").pack()
@@ -927,20 +972,20 @@ class InteractAnimalPage(tk.Frame):
 
 class FeedAnimalPage(tk.Frame):
     def __init__(self, parent, controller, zoo):
-        """Initializes the 'Feed an Animal' page."""
+        """Initialiserar sidan 'Mata ett djur'."""
         super().__init__(parent, bg="#1A3636")
         self.controller = controller
         self.zoo = zoo
         self.selected_animal = None
 
-        # Back button
+        # Tillbaka-knapp
         tk.Button(self, text="←", font=("Arial", 18, "bold"), bg="#677D6A", fg="white",
                   command=lambda: controller.show_page("ExploreParkPage")).place(relx=0.05, rely=0.05, width=50, height=50)
 
-        # Title
+        # Titel
         tk.Label(self, text="Mata ett djur", font=("Arial", 20, "bold"), bg="#D6BD98", fg="black").place(relx=0.5, rely=0.1, anchor="center")
 
-        # Search Frame
+        # Sökruta
         search_frame = tk.Frame(self, bg="#D6BD98")
         search_frame.place(relx=0.5, rely=0.18, anchor="center")
 
@@ -950,47 +995,48 @@ class FeedAnimalPage(tk.Frame):
         tk.Button(search_frame, text="Sök", font=("Arial", 12), bg="#677D6A", fg="white",
                   command=self.search_animal).pack(side="left")
 
-        # Result Frame
+        # Resultatram
         self.result_frame = tk.Frame(self, bg="white", bd=2, relief="groove")
         self.result_frame.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.7, relheight=0.5)
 
-        # Feed Button
+        # Mata-knapp
         self.feed_button = tk.Button(self, text="Mata", font=("Arial", 14, "bold"), bg="#677D6A",
                                      fg="white", state="disabled", command=self.feed_animal)
         self.feed_button.place(relx=0.5, rely=0.82, anchor="center", width=100)
 
     def search_animal(self):
-        """Searches for the animal by name and updates the result frame."""
+        """Söker efter ett djur baserat på namn och uppdaterar resultatramen."""
         animal_name = self.search_entry.get().strip()
         self.selected_animal = next((a for a in self.zoo.list_animals() if a.name.lower() == animal_name.lower()), None)
 
+        # Rensar tidigare resultat
         for widget in self.result_frame.winfo_children():
             widget.destroy()
 
         if self.selected_animal:
-            # Display Image
+            # Visa bild
             try:
                 img = Image.open(self.selected_animal.image_path).resize((200, 200), Image.Resampling.LANCZOS)
                 photo = ImageTk.PhotoImage(img)
                 img_label = tk.Label(self.result_frame, image=photo, bg="white")
-                img_label.image = photo  # Keep reference
+                img_label.image = photo  # Behåll referens
                 img_label.pack(side="left", padx=10)
             except:
                 tk.Label(self.result_frame, text="[Bild saknas]", bg="white", font=("Arial", 12)).pack(side="left", padx=10)
 
-            # Display Animal Info
+            # Visa djurets information
             info_text = (f"Art: {type(self.selected_animal).__name__}\n"
                          f"Namn: {self.selected_animal.name}\n"
                          f"Ålder: {self.selected_animal.age} år\n"
                          f"Favoritmat: {self.selected_animal.favorite_food}")
             tk.Label(self.result_frame, text=info_text, font=("Arial", 12), bg="white", anchor="w", justify="left").pack(side="left", padx=10)
-            self.feed_button.config(state="normal")
+            self.feed_button.config(state="normal")  # Aktivera mata-knappen
         else:
             tk.Label(self.result_frame, text="Inget djur hittades.", font=("Arial", 12, "italic"), fg="red", bg="white").pack()
 
     def feed_animal(self):
-        """Feeds the animal and shows the result."""
+        """Matar djuret och visar resultatet."""
         if self.selected_animal:
             result = self.selected_animal.eat(self.selected_animal.favorite_food)
             messagebox.showinfo("Matningsresultat", result)
-            self.feed_button.config(state="disabled")
+            self.feed_button.config(state="disabled")  # Inaktivera mata-knappen efter matning

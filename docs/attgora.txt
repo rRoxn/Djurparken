@@ -1,3 +1,0 @@
-Skriva dokumentation efter jag skapat zoo/main animal och lion klasserna detta var första implementeringen för programmet så man ser att det funkar. Så detta är första dokumentationen för detta. 
-
-Pep 8 konventionerna säger att man ska a stora bokstäver i klass namn. Det är branchstandard i Python. PascalCase.
