@@ -1,48 +1,110 @@
-Om Projektet
-Djurparken är ett interaktivt program där användare kan utforska en virtuell djurpark. Programmet erbjuder funktioner som att visa djurens detaljer, mata och interagera med djuren, samt hantera tillval för att förbättra besöksupplevelsen.
+# Djurparken (The Zoo)
 
-Projektet är byggt med Python och har ett grafiskt användargränssnitt (GUI) baserat på Tkinter. Koden är strukturerad med objektorienterad programmering (OOP) och inkluderar separata moduler för logik och gränssnitt.
+Ett interaktivt program för att utforska och hantera en virtuell djurpark, byggt med Python och Tkinter.
 
-Kom igång
-Förberedelser
-Klona projektet:
+## 🌟 Funktioner
 
-bash
-git clone <repository-url>
-cd Djurparken
-Skapa en virtuell miljö (rekommenderas):
+- Utforska olika djur i djurparken
+- Se detaljerad information om varje djur
+- Mata och interagera med djuren
+- Köp tillval för en förbättrad upplevelse
+- Grafiskt användargränssnitt för enkel navigation
 
-bash
-python -m venv env
-source env/bin/activate    # macOS/Linux
-env\Scripts\activate       # Windows
-Installera beroenden:
+## 📋 Krav
 
-bash
-pip install -r requirements.txt
-Starta Programmet
-Kör följande kommando för att starta applikationen:
+- Python 3.8 eller senare
+- pip (Python's pakethanterare)
+- Git (för att klona projektet)
 
-bash
-python src/main.py
-Använd GUI:t för att navigera mellan olika sidor, utforska djur, mata dem och köpa tillval.
+## 🚀 Installation
 
-Testning
-För att köra automatiserade tester, använd:
+1. **Klona projektet**
 
-bash
+   ```bash
+   git clone https://github.com/[användarnamn]/Djurparken.git
+   cd Djurparken
+   ```
+
+2. **Skapa en virtuell miljö**
+
+   På macOS/Linux:
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+   På Windows:
+
+   ```bash
+   python -m venv venv
+   .\venv\Scripts\activate
+   ```
+
+3. **Installera beroenden**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## 🎮 Användning
+
+1. **Starta programmet**
+
+   ```bash
+   python src/main.py
+   ```
+
+2. **Navigera i programmet**
+   - Använd menyn för att välja olika funktioner
+   - Klicka på djuren för att se mer information
+   - Använd knapparna för att interagera med djuren
+   - Köp tillval via menyn
+
+## 🧪 Testning
+
+Kör testerna med följande kommando:
+
+```bash
 pytest
-Testerna är designade för att validera funktionaliteten hos klasser och metoder.
+```
 
-Filstruktur
-src/: Innehåller källkoden för applikationen.
-main.py: Startpunkt för programmet.
-zoo/: Hanterar djurparkens logik.
-animals/: Klasser för djuren i parken.
-gui.py: Grafiskt användargränssnitt.
-tests/: Tester för att verifiera funktionaliteten.
-docs/: Dokumentation av projektet.
-assets/: Bilder och andra resurser.
+## 📁 Projektstruktur
 
-Licens
+```
+Djurparken/
+├── src/
+│   ├── main.py           # Programmets startpunkt
+│   ├── gui.py            # Grafiskt gränssnitt
+│   ├── zoo/
+│   │   └── zoo.py        # Djurparkens huvudlogik
+│   └── animals/          # Djurklasser
+│       ├── lion.py
+│       ├── lioncub.py
+│       ├── giraffe.py
+│       └── elephant.py
+├── assets/
+│   └── images/           # Bilder för djuren
+├── tests/                # Testfiler
+├── docs/                 # Dokumentation
+└── requirements.txt      # Projektberoenden
+```
+
+## 🛠️ Utveckling
+
+För att bidra till projektet:
+
+1. Forka repositoryt
+2. Skapa en ny branch för din feature
+3. Gör dina ändringar
+4. Kör testerna för att säkerställa att allt fungerar
+5. Skicka en pull request
+
+## 📝 Licens
+
 Detta projekt är utvecklat för utbildningsändamål och är fritt att använda och modifiera.
+
+## ⚠️ Viktigt
+
+- Säkerställ att du har rätt Python-version installerad
+- Använd alltid den virtuella miljön när du arbetar med projektet
+- Se till att alla tester går igenom innan du gör några ändringar
